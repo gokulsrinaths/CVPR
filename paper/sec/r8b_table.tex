@@ -1,0 +1,31 @@
+
+\begin{table*}[t]
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{4pt}
+  \begin{tabular}{@{}l p{0.37\textwidth} p{0.50\textwidth}@{}}
+    \toprule
+    Amend. & Prediction & Outcome \\
+    \midrule
+    A8 & Text-decisive answers never change; the image is a tie-breaker on undecided questions (released adapter) & all six predictions supported (0 of 2{,}463 changed; $+12.1$ points, $p=2\times10^{-5}$) \\
+    A9--A10 & The tie-breaker benefit ($\ge+5$ points) replicates in fine-tuned Qwen 3B/7B and in four recipe variants & \emph{falsified}: $-1.0$, $+1.8$ and $-4.1$ to $+2.6$ points; no-veto, habit and alarm supported \\
+    A11 & PMC-VQA (no cue): no habit, gap $\ge+5$, undecided-stratum effect $\ge+5$ (Q1--Q3), alarm (Q5) & Q1--Q3 supported for three families; Q4 not evaluable (empty band); Q5 supported on E1, not on E2 \\
+    A13 & Cue planted at 92\%: habit, gap $\approx0$, text margin $\ge0.99$ for 30\% of questions (I1--I4) & I1, I3, I4 supported; I2 \emph{falsified} (confident but never $\ge0.99$) \\
+    A15 & Competition score beats saturation (C1, C2); blur factorial (F1--F3) & C1, C2 \emph{falsified}; F1--F3 supported for three families \\
+    A16 & 7B seeds (S1, S2); OmniMedVQA (O1, O3, O4) and the lock rule (O2) & S1, S2, O1, O3, O4 supported; O2 \emph{falsified} for three systems \\
+    A17 & Dose-response H1, H2, H3a, H4, H5; position shortcut P1--P4; H3b & H1, H2, H3a, H4, H5 and P1--P4 supported (Holm); H3b \emph{falsified} \\
+    A18 & Rescue: M-A, M-B, M-D, M-E, M-G (controlled setting); M-F (Med-CMR) & M-A, M-B, M-D, M-E, M-G supported; M-F \emph{falsified} (collapse to chance) \\
+    A19 & Held-out transfer to InternVL3-2B and Qwen-7B (A, B, C) & \emph{supported} for both models: deviations $0.65$ and $1.96$ points ($\le4$), boundary and monotonicity as predicted \\
+    A21 & Non-medical replication on A-OKVQA: dose-response (R1), cue uptake (R2), boundary shift (R3), lock-out at $d=0.92$ (R4) & R1, R3 supported in three series; R2 \emph{falsified} (accuracy on cue-free questions does not fall); R4 \emph{falsified} ($+8$ to $+12$ points at $d=0.92$) \\
+    A22 & Higher strengths (H1--H3) and position shortcut (P1--P4) on A-OKVQA; second seed of A19 (S) & H1, H2 supported, lock-out at $d=0.99$; P1, P2 supported, P3 \emph{falsified}; S supported for both models \\
+    A23 & Second seed of the A-OKVQA lock-out (B1, B2); Qwen-7B on A-OKVQA (C1--C3) & all supported: lock-out at $d=0.99$ in a second seed ($+0.09$ points) and in Qwen-7B ($+0.09$) \\
+    A25 & More seeds on A-OKVQA: dose-response and boundary shift (D1, D2), lock-out at $d=0.99$ (L1, L2) & D1, D2 supported; L1 supported for Qwen-3B (third seed) and Qwen-7B (second seed), \emph{falsified} for InternVL3-2B ($+1.66$ points, boundary blur 2) \\
+    A24 & Real Med-CMR shortcut: explicit length prior (LP), mismatched-image uniformity (MU), both; criterion E1 & E1 \emph{falsified} for all three (image effect $\le+4.6$ points; accuracy $79$--$80\%$ for LP+MU) \\
+    A26 & Real Med-CMR shortcut, criterion on all questions: gold-unlikelihood under a mismatched image (UL), UL with the length prior, LP+MU with more seeds (F1, F2) & UL met F1 and F2 in three of three seeds ($+52$ to $+71$ points against a black image, $+11.6$ against a plausible wrong image, accuracy $89.5$--$91.2\%$); LP+UL collapsed; LP+MU: F1 in four of five seeds, F2 in none \\
+    A27 & Is UL's image dependence graded in image content? (blur test, C) & C supported in three of three seeds, but a blur of radius 8 already recovers $81$ and $87\%$ of the gap in two seeds: dependence mostly on coarse image identity \\
+    A12, A6--A7 & Cue-removal tests; alarm combiner (M1); saturation-aware loss (M2) & L1 not evaluable; A6, A7 not evaluable; M1, M2 \emph{falsified} \\
+    \bottomrule
+  \end{tabular}
+  \caption{\textbf{Confirmatory pre-registered tests and outcomes.} ``Supported'' means every stated criterion held; thresholds were fixed before the runs (hash-chained amendments).}
+  \label{tab:prereg}
+\end{table*}

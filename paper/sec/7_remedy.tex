@@ -1,0 +1,22 @@
+\section{Can the Shortcut Be Undone?}
+\label{sec:remedy}
+
+If a text-side shortcut locks the decision during training, a model that is kept from using the shortcut should retain visual control.
+We test this where the shortcut is planted and then on the real Med-CMR shortcut.
+
+\paragraph{Planted shortcut: product-of-experts works.}
+Product-of-experts debiasing~\cite{clark2019dont,cadene2019rubi} trains the main model on $\log p_{\rm main}+\ell_b$, where $\ell_b$ are the option log-probabilities of a text-only \emph{bias expert} trained on the \emph{other} half of the training questions; the main model alone is used at test time, and a control with weight $0$ isolates the expert.
+With the cue planted at 92\% in PMC-VQA the rescued models regain an image benefit of $+16.5$, $+13.5$ and $+14.0$ points in three seeds (naive: $0.0$--$0.2$; control $+0.25$; $p<10^{-30}$), their veto boundary returns to blur 16--8 (Supp.~R) and their accuracy on cue-free questions rises from $38\%$ to $49$--$51\%$ (a model trained without the cue: $51.8\%$); test-time contrastive scoring does not rescue the locked model.
+The cost is accuracy on cue-\emph{present} questions ($91.7\%$ to $47$--$49\%$), a gain only if the shortcut will not be available when the model is used.
+
+\paragraph{Real shortcut: five attempts fail.}
+On Med-CMR the same method collapses to chance accuracy because the neural expert is saturated (median probability margin $0.9995$; pre-registered criterion falsified); tempering it (exploratory) keeps accuracy but not the image (shortest option still picked 90\% of the time; image effect $+0.2$, $-0.2$, $-0.2$ points).
+We then tried three further methods with criteria fixed in advance: an explicit length-rank prior as the bias expert (LP), a penalty that makes the model uncertain when the image belongs to another case of the same modality and organ system (MU), and both (LP+MU).
+The criterion was an image effect of at least $+5$ points on the questions that the reference model found undecided with accuracy of at least $93.5\%$; none met it (Supp.~X): LP gave $+0.7$ to $+2.2$ points at $91.5$--$92.4\%$ accuracy, MU $0.0$ to $+4.6$ at $94.2$--$94.7\%$, LP+MU $+0.5$ to $+3.2$ at $79$--$80\%$.
+Only LP+MU made answers depend on the image at all, in two of three seeds, at a cost of about 15 points of accuracy.
+With three attempts to remove the cue from the data (Supp.~B) these are eight attempts that did not work (the cue-removal attempts failed their quality gates or gave no causal test).
+
+\paragraph{Why it may fail.}
+On the 235 of 3{,}000 unseen questions where the correct option is \emph{not} the shortest, the cue-trained models still gain nothing from the image ($-1.3$ points for Qwen-3B and $0.0$ for Qwen-7B, with approximate 95\% intervals of $[-4.7,+2.2]$ and $[-2.9,+2.9]$; exploratory, Supp.~X).
+Either these questions can mostly be answered from the text, or fine-tuned models do not read the image on this data; we have not tested which.
+The technique is not new and it is a negative result on the real shortcut; what the study adds is the diagnosis that says when it is needed and a dose-controlled setting in which its effect can be attributed.

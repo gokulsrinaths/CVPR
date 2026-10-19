@@ -1,0 +1,23 @@
+\section{Observation: One Recipe, Two Benchmarks}
+\label{sec:obs}
+
+\paragraph{Med-CMR: the text decides and the headline hides it.}
+On Med-CMR the correct option is the shortest in 91.9\% of 13{,}687 questions (95\% CI 91.4--92.4), so a rule that picks it scores 91.1\% on the test slice.
+Three benchmark-tuned model families (the released adapter; Qwen2.5-VL and InternVL3 models that we fine-tune on the training split and evaluate on 3{,}000 questions they never saw) are text-saturated: 82--84\% of questions are text-decisive, and on them no counterfactual image, whether black, random or a plausible wrong one, changes any answer (0 of about 2{,}500 per system).
+Fine-tuning installs the habit (the shortest option is picked 23--25\% of the time before and 91--92\% after) and the headline true-vs-black gaps of the three systems are within 1.3 points, so a conventional ablation calls them equally image-blind.
+The stratified view tells them apart: in the 5--15\% text-undecided questions the released adapter gains $+12.1$ points from the image ($p=2\times10^{-5}$; on data that may overlap its unknown training set), whereas our fine-tuned models gain between $-4.1$ and $+2.6$ points across seven training configurations (Supp.~G); the confidence flags 97--100\% of the errors but barely depends on the image (Supp.~H).
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{fig/f5_two_benchmarks.pdf}
+  \caption{\textbf{The same three systems and recipe on three conditions.} Orange: Med-CMR (3{,}000 unseen questions); blue: PMC-VQA (clean test, 1{,}999); violet: PMC-VQA with a length cue planted at 92\% (Sec.~\ref{sec:dose}). (a)~Distribution of the black-image margin (solid, dashed, dotted: Qwen 3B, Qwen 7B, InternVL 2B). (b)~Share of predictions equal to the shortest option. (c)~Image benefit over all questions. (d)~Image benefit when the true image is blurred (radius 24 and 8\,px) or intact; mean and range over the three families.}
+  \label{fig:two}
+\end{figure*}
+
+\paragraph{PMC-VQA: without the cue, the image matters.}
+On PMC-VQA the correct option is the shortest in only 19.7\% of the questions.
+The same three families with the identical recipe do not acquire the habit (24--27\%), are never text-decisive (no question has a black-image margin of at least $0.99$, against 75--79\% on Med-CMR) and lose $13.7$, $14.9$ and $14.4$ points without the image (Fig.~\ref{fig:two}).
+Zero-shot the gaps are already $14$--$16$ points, so fine-tuning on PMC-VQA leaves visual control in place.
+Image use is therefore strongly benchmark-dependent and cannot be attributed to the architecture or the recipe alone.
+This contrast is observational: the benchmarks differ in topic, image type, question style and size.
+Sec.~\ref{sec:dose} intervenes on the shortcut itself.

@@ -1,0 +1,3 @@
+# Note to A40 and A41 (2026-10-12): runs not performed
+A40: the Qwen2.5-VL-7B arm completed (job 24544207; result in analysis/a40_interim.md, rule Z2 holds). The 32B arm was never run: its jobs (24544208, 24545584, 24545585) waited in the queue and were cancelled on 2026-10-12 when the paper was finalised. Rules Z1 and Z3 (both defined on the 32B model) are therefore not evaluable, and analysis/a40_summary.json was not produced (scripts/a40_analysis.py needs both models).
+A41 (zero-shot Qwen2.5-VL-3B): job 24546370 was submitted and cancelled after about 5 minutes without producing any result; rules Y1 and Y2 are not evaluable and nothing from this run is used.

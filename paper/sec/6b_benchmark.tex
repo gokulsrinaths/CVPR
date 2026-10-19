@@ -1,0 +1,47 @@
+\section{Same Models, Other Benchmarks}
+\label{sec:pmc}
+
+Everything so far concerns one benchmark whose options carry a length cue.
+We therefore repeat the study, pre-registered in advance (A11), on PMC-VQA~\cite{zhang2023pmcvqa}: four-option questions on figures from PubMed Central, where the correct option is the shortest in only 19.7\% of the 1{,}999 clean test questions (chance 25\%).
+We fine-tune the same two Qwen models and a third family, InternVL3-2B~\cite{zhu2025internvl3}, with the identical recipe on 9{,}277 questions, split from the evaluation questions by source article, and evaluate on the official clean test set (E1, primary) and on 3{,}000 held-out questions (E2, replication) with the same four image arms (Supp.~F).
+InternVL3-2B trained on Med-CMR first reproduces the pattern, with every pre-registered prediction holding: 83.8\% of fresh questions are text-decisive, none of their 2{,}514 answers changes under a black, random or nearest-neighbour image, the image is worth $-0.2$ points on undecided questions ($p=1.0$), it picks the shortest option 91\% of the time, and the flagged 16\% hold 153 of its 154 errors.
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{fig/f5_two_benchmarks.pdf}
+  \caption{\textbf{The same three systems and recipe on three conditions.} Orange: Med-CMR (3{,}000 unseen questions); blue: PMC-VQA (clean test, 1{,}999); violet: PMC-VQA with a length cue planted in training and test options (Sec.~\ref{sec:pmc}). (a)~Distribution of the margin with a black image (solid, dashed, dotted: Qwen 3B, Qwen 7B, InternVL 2B). (b)~Share of predictions equal to the shortest option. (c)~Accuracy with the true minus with a black image over all questions (Med-CMR and planted: all within $\pm0.3$ points). (d)~Image benefit (accuracy minus black-image accuracy) when the true image is blurred (radius 24 and 8\,px) or intact; mean and range over the three families.}
+  \label{fig:two}
+\end{figure*}
+
+\paragraph{Without the cue, the pattern is gone (Q1--Q3, all supported).}
+On PMC-VQA the text is never decisive: no fine-tuned model has a single E1 question with a black-image margin of at least $0.99$ (against 75--79\% of Med-CMR questions), and 98.7--98.9\% have margins below $0.5$ (Fig.~\ref{fig:two}a).
+The shortest-option habit is not created (24--27\%, against 91--92\% on Med-CMR; Fig.~\ref{fig:two}b).
+And the image matters: removing it costs $13.7$, $14.9$ and $14.4$ points over all questions (each $p<10^{-6}$; $9.8$ to $12.9$ on E2), and $14.5$, $18.1$ and $18.7$ points on the least-confident questions, exactly where the Med-CMR models gained nothing (Fig.~\ref{fig:two}c).
+A random image costs 14--18 points and a similar wrong one 7--8, so the models read the image content; zero-shot the gaps are already $14.0$, $16.4$ and $16.1$ points, so fine-tuning on PMC-VQA leaves image use in place.
+The pre-registered test of the ``no veto'' property (Q4) could not be run, because no question reaches the saturation band, and our threshold-defined stratum is not decisive (the threshold is only $0.04$; 30--31\% of its answers change when the image is blanked): no veto is a consequence of saturation, not a general property of fine-tuned VLMs.
+
+\paragraph{Planting the cue (A13): the image stops mattering.}
+Is a length cue sufficient to produce the Med-CMR behaviour?
+We planted one in PMC-VQA, with neutral filler words added to \emph{all} options so that the correct option is the shortest in 92\% of questions (the strength of Med-CMR's cue), in training and test options alike, and retrained the same three systems.
+They learn it completely: they pick the shortest option 99.6--99.8\% of the time and reach 91.7--91.8\% accuracy (against 51--54\%), the image is worth $+0.05$, $-0.1$ and $+0.2$ points (against $+13.7$ to $+14.9$; $p\ge0.12$; Fig.~\ref{fig:two}b,c), and on the original, cue-free test questions their accuracy falls to $38.2$, $38.8$ and $28.6\%$, 14--22 points below the models trained on the original options.
+One pre-registered prediction failed (I2): these models are confident but not saturated ($99\%$ of questions have a black-image margin above $0.5$, none above $0.99$, Fig.~\ref{fig:two}a), so the planted cue reproduces the image-indifference of Med-CMR but not its saturation as defined by our $0.99$ band.
+A planted surface cue is therefore \emph{sufficient} to make an image-using model ignore the image.
+This shows sufficiency, not that Med-CMR's own cue is what drives its models.
+
+\paragraph{Locked versus contestable (A15).}
+To vary the visual evidence we blur the true image (radius 24 and 8\,px) and compare the three text conditions (Fig.~\ref{fig:two}d).
+Where the text is not locked (PMC-VQA), the image benefit grows with the strength of the visual evidence ($+0.3$, $+2.3$ and $+13.8$ points for blur 24, blur 8 and the intact image); where it is locked (Med-CMR, and PMC-VQA with the planted cue) the benefit is zero at every strength ($|g|\le1$ point for all three families; the three pre-registered predictions F1--F3 hold).
+Text strength and visual strength interact: vision matters only where the text does not already decide.
+Planting the cue raises the median text-side margin from $0.25$--$0.38$ to $3.3$ log-odds (C3).
+We also asked whether a competition score, the visual push of other images divided by the text margin, predicts when the true image overrides the text better than text saturation alone: it did not (C1 and C2 failed; on Med-CMR it is worse), so we keep the simple stratification (Supp.~P).
+
+\paragraph{Removing the cue did not work (A12).}
+We also tried to remove the cue from Med-CMR with filler that randomises the length rank of the options (our third failed attempt after two LLM rewrites, Supp.~B).
+The filler alone, order preserved, costs the fine-tuned models 6--11 points, so the pre-registered test was not evaluable; models trained on randomised ranks keep their accuracy (95--96\%), still pick the originally shortest option 91\% of the time, and show an image gap of $+0.2$ to $+0.4$ points: they read through the filler, so the cue is not a surface character count and this intervention does not isolate it (Supp.~J).
+
+\paragraph{Two fixes that did not help (A12).}
+Down-weighting the 85\% of training questions that a text-only model already answers confidently left the image effect on the questions that were undecided for the standard model at $+1.5$ points ($-1.0$ before, $p=0.34$; Qwen 3B), and a combiner of image-evidence features did not improve the margin alarm (AUROC $+0.008$, $+0.005$, $-0.001$ on PMC-VQA; Supp.~J).
+
+\paragraph{Reading.}
+With the same architectures, recipe and readout, Med-CMR yields saturated, shortcut-driven models that ignore the image ($-0.1$ to $+0.2$ points) and PMC-VQA yields unsaturated models that depend on it ($+14$ points): image use is strongly benchmark-dependent and cannot be attributed to the architecture or the recipe alone.
+The cross-benchmark contrast is not itself causal (the benchmarks differ in topic, image type, question style, size and accuracy); the planted cue and the blur experiment supply the causal half, as a sufficiency result for the cue (Supp.~K).

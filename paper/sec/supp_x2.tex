@@ -1,0 +1,58 @@
+
+\section{Second round on the real shortcut: price of image use}
+\label{app:a26}
+
+\paragraph{A26.}
+Pre-registered after A24 and before its runs; its thresholds were chosen after seeing A24 (the stated post-hoc origin).
+Criterion F1: an image effect (true minus black accuracy) over all 3{,}000 FRESH questions of at least $+3$ points with exact McNemar $p<0.025$; F2: FRESH accuracy with the true image of at least $88\%$; a new method succeeds if both hold in at least two of three seeds.
+Methods (Qwen-3B, A9 recipe): \textbf{UL}, the standard loss plus $-\log(1-p_{\rm gold})$ for the same question shown with the image of another case of the same modality and organ system ($\lambda=1$); \textbf{LP+UL}, UL with the length prior as bias expert; and two further seeds of LP+MU.
+Table~\ref{tab:a26} gives the runs.
+UL meets F1 and F2 in three of three seeds; LP+UL collapses (the main model learns to avoid the option favoured by the length prior); LP+MU meets F1 in four of five seeds and F2 in none.
+
+\begin{table*}[t]
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{4pt}
+  \begin{tabular}{@{}llccccccc@{}}
+    \toprule
+    Method & Seed & Effect vs black (pts) & FRESH acc. & TEST711 acc. & Shortest (\%) & True / black / random / plausible wrong (\%) & F1 & F2 \\
+    \midrule
+    UL & 41 & +52.4 & 91.23 & 92.5 & 86.9 & 91.2 / 38.8 / 16.2 / 79.6 & yes & yes \\
+     & 42 & +68.6 & 90.27 & 91.1 & 87.1 & 90.3 / 21.6 / 13.9 / 78.8 & yes & yes \\
+     & 43 & +71.0 & 89.47 & 92.5 & 88.2 & 89.5 / 18.5 / 12.7 / 77.7 & yes & yes \\
+    LP+UL & 41--43 & $+0.1$, $-0.1$, 0.0 & 0.53, 0.77, 0.73 & 0.7, 0.6, 0.4 & 0.0 & collapsed & no & no \\
+    LP+MU & 31 & +8.3 & 79.93 & 81.3 & 77.1 & 79.9 / 71.6 / 48.6 / 76.7 & yes & no \\
+     & 32 & +5.2 & 79.37 & 80.6 & 76.0 & 79.4 / 74.2 / 56.8 / 77.8 & yes & no \\
+     & 33 & +0.2 & 79.30 & 80.7 & 76.9 & 79.3 / 79.1 / 66.4 / 78.0 & no & no \\
+     & 34 & +3.5 & 77.13 & 76.4 & 72.9 & 77.1 / 73.6 / 60.8 / 75.2 & yes & no \\
+     & 35 & +5.0 & 77.67 & 79.6 & 75.5 & 77.7 / 72.7 / 62.0 / 75.6 & yes & no \\
+    \bottomrule
+  \end{tabular}
+  \caption{\textbf{A26 runs on the real Med-CMR shortcut (Qwen-3B).} Effect: true minus black image accuracy over all 3{,}000 FRESH questions (all $p<10^{-10}$ except LP+MU seed 33, $p=0.73$, and LP+UL); accuracies in \%; shortest: share of shortest-option predictions on TEST711 (reference 90--92\%). The last accuracy column gives the FRESH accuracy with the true image, a black image, a random other image and a nearest-neighbour (plausible wrong) image (exploratory).}
+  \label{tab:a26}
+\end{table*}
+
+\paragraph{The price of image use (exploratory).}
+Table~\ref{tab:price} gives, for every method tried on the real shortcut, the accuracy with the true image and the accuracy lost when the image is replaced by a plausible wrong one of the same modality (Fig.~\ref{fig:price}).
+The black-image effect of UL ($+52$ to $+71$ points) is inflated by the penalty itself: the penalty lowers the probability of the correct option under images of other cases, so a black or unrelated image is treated alike, and with a random other image the accuracy of UL is $12.7$--$16.2\%$, below chance.
+The loss against a plausible wrong image is the more conservative measure of dependence on the specific image; it does not separate dependence on image content from detecting a mismatch of modality or organ.
+
+\begin{table}[tbp]
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{2.4pt}
+  \begin{tabular}{@{}lccc@{}}
+    \toprule
+    Method (seeds) & Acc.\ true image & Loss, plausible wrong image & Loss, random image \\
+    \midrule
+    Reference (A9) & 95.5 & 0.0 & $-0.1$ \\
+    Tempered expert (3) & 95.0--95.7 & 0.2--0.3 & 0.0--0.4 \\
+    LP (3) & 91.5--92.4 & 0.0--0.4 & 0.0--0.3 \\
+    MU (3) & 94.2--94.7 & 1.1--1.3 & 22.7--27.5 \\
+    LP+MU (5) & 77.1--79.9 & 1.3--3.3 & 12.9--31.3 \\
+    UL (3) & 89.5--91.2 & 11.5--11.8 & 75.0--76.8 \\
+    \bottomrule
+  \end{tabular}
+  \caption{\textbf{Price of image use on the real shortcut} (FRESH3000, accuracy in \%, losses in points relative to the true image).}
+  \label{tab:price}
+\end{table}

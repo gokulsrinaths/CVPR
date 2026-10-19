@@ -1,0 +1,223 @@
+
+\section{Non-medical replication: A-OKVQA (A21)}
+\label{app:a21}
+
+\paragraph{Data.}
+A-OKVQA~\cite{schwenk2022aokvqa} (public release; the questions have four options; we use the mirror \texttt{HuggingFaceM4/A-OKVQA}, 17{,}056 training and 1{,}145 validation questions; the test labels are hidden).
+The 1{,}145 official validation questions are the test set E1 (1{,}122 images).
+No training question shares an image with E1; the remaining training questions are grouped by image hash and whole groups fill VAL700 (700 questions, 673 images; used only for the 15th-percentile text-saturation threshold) and TR (9{,}277 questions, 8{,}994 images); the splits are image-disjoint (checked in the build script).
+Before planting, the correct option is the unique shortest in 15.8\% (TR), 13.4\% (VAL700) and 16.1\% (E1) of the questions and the gold letters are uniform (24--26\% each), so there is no natural length or position cue.
+The recipe is that of A11/A17 (LoRA $r=16$, one epoch, learning rate $10^{-4}$, images at most 448\,px) with the system prompt ``You are a helpful assistant that answers multiple-choice questions about images.''; the planted shortcut is the length shortcut of A17 (neutral filler on all options; realised cue rate on E1: 0.2498, 0.6996, 0.9197 for $d=0.25$, 0.70, 0.92).
+Arms: true image, black image and the blur ladder (radius 32, 16, 8, 4, 2\,px); the mismatched-image arms and the downsampling ladder of A17 were not used.
+Three series: Qwen2.5-VL-3B with seeds 20261021 and 20261022 and InternVL3-2B with seed 20261021, each at $d=0.25$, 0.70, 0.92 (nine runs, A30 GPUs; InternVL3-2B with gradient checkpointing).
+
+\begin{table*}[t]
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{4pt}
+  \begin{tabular}{@{}llcccccccc@{}}
+    \toprule
+    Series & $d$ & $g$ (pts) & 95\% CI & $V^\ast$ & Acc.\ true / black & Cue-free acc. & Shortest (\%) & $M_T$ \\
+    \midrule
+    S1 Qwen-3B, seed 1 & 0.25 & +33.89 & 30.7--37.0 & 2 & 82.5 / 48.7 & 82.8 & 24.8 & 1.13 \\
+     & 0.70 & +24.45 & 21.3--27.3 & 3 & 87.2 / 62.7 & 82.5 & 66.9 & 1.75 \\
+     & 0.92 & +8.12 & 6.2--10.0 & 3 & 95.2 / 87.1 & 82.6 & 91.8 & 3.38 \\
+    S2 Qwen-3B, seed 2 & 0.25 & +33.28 & 30.0--36.5 & 2 & 83.1 / 49.8 & 82.6 & 24.6 & 1.00 \\
+     & 0.70 & +23.49 & 20.4--26.5 & 3 & 87.1 / 63.6 & 83.0 & 66.7 & 1.63 \\
+     & 0.92 & +7.95 & 5.9--10.0 & 3 & 94.5 / 86.6 & 82.0 & 90.7 & 3.25 \\
+    S3 InternVL3-2B & 0.25 & +37.64 & 34.4--40.9 & 2 & 82.1 / 44.5 & 82.5 & 24.8 & 1.63 \\
+     & 0.70 & +28.91 & 25.7--32.1 & 2 & 85.5 / 56.6 & 82.6 & 64.8 & 2.00 \\
+     & 0.92 & +11.70 & 9.3--14.1 & 4 & 93.1 / 81.4 & 82.2 & 88.0 & 3.38 \\
+    \bottomrule
+  \end{tabular}
+  \caption{\textbf{A-OKVQA dose-response (A21).} $g$: image benefit of the intact image (points) on the 1{,}145 test questions, with paired-bootstrap 95\% interval; $V^\ast$: veto boundary (1 = blur 32, \dots, 6 = intact, 7 = none); accuracies (\%) on the planted test; cue-free acc.: accuracy on the original, unplanted options with the true image; shortest: share of predictions equal to the shortest option; $M_T$: median black-image log-odds margin.}
+  \label{tab:a21}
+\end{table*}
+
+\begin{table}[tbp]
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{3pt}
+  \begin{tabular}{@{}lccc@{}}
+    \toprule
+    Rule & S1 & S2 & S3 \\
+    \midrule
+    R1 dose-response & supported & supported & supported \\
+    R2 cue uptake & \emph{falsified} & \emph{falsified} & \emph{falsified} \\
+    R3 boundary shift & supported & supported & supported \\
+    R4 lock-out at 0.92 & \emph{falsified} & \emph{falsified} & \emph{falsified} \\
+    \bottomrule
+  \end{tabular}
+  \caption{\textbf{Pre-registered rules of A21.} R1: $g(0.25)-g(0.92)\ge5$ and $g$ falling monotonically; R2: shortest-option picks $\ge85\%$ at 0.92 and $\le35\%$ at 0.25 \emph{and} accuracy on cue-free questions at least 5 points lower at 0.92 than at 0.25 (the first clause holds in all series; the drop is $0.2$, $0.6$ and $0.4$ points); R3: $V^\ast(0.92)\ge V^\ast(0.25)+1$; R4: $g(0.92)\le2$ and $V^\ast=$ none ($g=+8.1$, $+8.0$, $+11.7$). The frozen script's verdict is ``mixed''; the amendment has no reading for this combination.}
+  \label{tab:a21rules}
+\end{table}
+
+\section{Higher strengths, position shortcut and second seed (A22)}
+\label{app:a22}
+
+A22 was pre-registered after A21 and before its runs.
+\textbf{Part H} (higher strengths): Qwen2.5-VL-3B on A-OKVQA with the length shortcut at $d=0.97$ and $0.99$ (seed 20261021); the doses were chosen after seeing that $d=0.92$ left $+8$ points, the criteria were fixed before the runs.
+\textbf{Part P} (position shortcut): the same model and benchmark, the correct option placed at position A with probability $d=0.25$, 0.70, 0.92.
+\textbf{Part S} (second seed of A19): InternVL3-2B and Qwen2.5-VL-7B on PMC-VQA, length shortcut at $d=0.25$, 0.70, 0.92, seed 20261012, the rules A, B, C of A19 unchanged.
+Parts H and P ran on RTX PRO 6000 Blackwell GPUs (96\,GB) with a separate PyTorch 2.7.1 environment for CUDA 12.8 (the shared CUDA 12.6 environment does not support these GPUs), so the curve of part H combines A30 runs ($d\le0.92$) and RTX runs ($d\ge0.97$); part S ran on A30 GPUs with gradient checkpointing, as the first seed.
+Rules: H1 $g(0.99)\le g(0.92)-3$; H2 shortest option picked in $\ge95\%$ at $d=0.99$; H3 lock-out ($g\le2$ and $V^\ast=$ none), reported; P1 dose-response; P2 letter A picked in $\ge85\%$ at 0.92 and $\le35\%$ at 0.25; P3 boundary shift; P4 lock-out, reported.
+H1, H2, P1, P2 and S are supported; H3 is reached at $d=0.99$ and not at $d=0.97$; P3 is falsified ($V^\ast=3$ at every strength) and P4 is not reached ($g(0.92)=+6.6$).
+
+\begin{table*}[t]
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{4pt}
+  \begin{tabular}{@{}llcccccccc@{}}
+    \toprule
+    Part & $d$ & $g$ (pts) & 95\% CI & $V^\ast$ & Acc.\ true / black & Cue-free acc. & Picks (\%) & $M_T$ \\
+    \midrule
+    H (length) & 0.97 & +2.62 & 1.3--3.9 & 4 & 96.6 / 94.0 & 82.4 & 96.9 & 4.75 \\
+     & 0.99 & +0.35 & $-0.1$--0.9 & 7 & 98.9 / 98.5 & 80.4 & 99.5 & 6.13 \\
+    P (position) & 0.25 & +31.62 & 28.6--34.8 & 3 & 83.0 / 51.4 & 82.9 & 24.4 & 1.00 \\
+     & 0.70 & +20.61 & 17.6--23.4 & 3 & 89.2 / 68.6 & 80.1 & 70.0 & 1.75 \\
+     & 0.92 & +6.64 & 4.9--8.4 & 3 & 95.6 / 88.9 & 73.8 & 92.2 & 3.88 \\
+    \bottomrule
+  \end{tabular}
+  \caption{\textbf{A-OKVQA, parts H and P of A22 (Qwen-3B, seed 20261021).} Columns as in Table~\ref{tab:a21}; picks: share of predictions equal to the shortest option (H) or to letter A (P). The runs at $d=0.25$, 0.70, 0.92 of part H are those of Table~\ref{tab:a21} (series S1).}
+  \label{tab:a22hp}
+\end{table*}
+
+\begin{table}[tbp]
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{2.4pt}
+  \begin{tabular}{@{}lcccccc@{}}
+    \toprule
+    Model & $d$ & $g$ & Dev. & $V^\ast$ & Cue-free acc. & Short.\ (\%) \\
+    \midrule
+    InternVL3-2B & 0.25 & +13.06 & 0.44 & 3 & 50.9 & 22.7 \\
+     & 0.70 & +2.80 & 0.60 & 5 & 38.3 & 93.3 \\
+     & 0.92 & +0.25 & 0.15 & 7 & 34.4 & 99.5 \\
+    Qwen-7B & 0.25 & +15.31 & 1.81 & 3 & 55.1 & 22.2 \\
+     & 0.70 & +4.10 & 0.70 & 5 & 46.0 & 90.2 \\
+     & 0.92 & +0.25 & 0.15 & 7 & 37.4 & 99.8 \\
+    \bottomrule
+  \end{tabular}
+  \caption{\textbf{Second seed of the held-out test (A22, part S; seed 20261012, PMC-VQA).} Columns as in Table~\ref{tab:a19}; both models pass rules A, B and C.}
+  \label{tab:a22s}
+\end{table}
+
+\paragraph{Sensitivity of the veto boundary to its threshold (exploratory).}
+Table~\ref{tab:vsens} recomputes $V^\ast$ from the stored runs with a required benefit of $+1$, $+2$ (the pre-registered value) and $+3$ points (bootstrap lower bound at half of that value).
+The lock-out ($V^\ast=$ none) is reached from $d=0.85$ on PMC-VQA and at $d=0.99$ on A-OKVQA at all three thresholds; at $d=0.97$ on A-OKVQA the boundary is blur 8, blur 4 or none depending on the threshold.
+
+\begin{table}[tbp]
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{3pt}
+  \begin{tabular}{@{}llccc@{}}
+    \toprule
+    Benchmark (Qwen-3B) & $d$ & $+1$ & $+2$ & $+3$ \\
+    \midrule
+    PMC-VQA (3 seeds) & 0.25 & 3,3,3 & 4,3,3 & 4,4,3 \\
+     & 0.55 & 4,4,4 & 5,4,5 & 5,5,5 \\
+     & 0.70 & 4,5,5 & 5,5,5 & 6,6,6 \\
+     & 0.85 & 7,7,7 & 7,7,7 & 7,7,7 \\
+     & 0.92 & 7,7,7 & 7,7,7 & 7,7,7 \\
+    A-OKVQA (seeds 1,2) & 0.25 & 2,2 & 2,2 & 2,2 \\
+     & 0.70 & 3,3 & 3,3 & 3,3 \\
+     & 0.92 & 1,3 & 3,3 & 3,4 \\
+    A-OKVQA (seed 1) & 0.97 & 3 & 4 & 7 \\
+     & 0.99 & 7 & 7 & 7 \\
+    \bottomrule
+  \end{tabular}
+  \caption{\textbf{Veto boundary $V^\ast$ under three benefit thresholds} (1 = blur 32, \dots, 6 = intact, 7 = none; one entry per seed).}
+  \label{tab:vsens}
+\end{table}
+
+\section{More seeds and a larger model on A-OKVQA (A23, A25)}
+\label{app:a23}
+
+A23 was pre-registered after A22 and before its runs: Qwen2.5-VL-3B with a second seed (20261022) at $d=0.97$ and $0.99$ (the $d=0.92$ run is that of A21), and Qwen2.5-VL-7B (seed 20261021, gradient checkpointing) at $d=0.25$, 0.70, 0.92, 0.99; A30 GPUs, the split and recipe of A21.
+All rules hold: B1 (lock-out at $d=0.99$ in the second seed: $g=+0.09$, $V^\ast=$ none), B2 (monotone), C1 (dose-response of the 7B model: $g=+34.2\to+6.5$), C2 (boundary shift $V^\ast$ 2 $\to$ 3) and C3 (lock-out of the 7B model at $d=0.99$, reported).
+
+A25 (pre-registered after A23) added a second seed of Qwen-7B and of InternVL3-2B at $d=0.25$, 0.70, 0.92, 0.99 (seed 20261022) and a third Qwen-3B seed (20261023) at $d=0.92$, 0.97, 0.99.
+Qwen-7B and Qwen-3B satisfy every rule (lock-out at $d=0.99$: $g=+0.35$ and $+0.26$, no helpful image strength).
+InternVL3-2B satisfies the dose-response and the boundary-shift rules ($g=+39.0\to+12.3$, $V^\ast$ 2 $\to$ 3) but not the lock-out rule: at $d=0.99$ it keeps $g=+1.66$ (95\% interval $0.61$--$2.79$), and the weakest helpful image is blur 2 (Table~\ref{tab:a25}).
+
+\begin{table}[tbp]
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{2.4pt}
+\resizebox{\linewidth}{!}{%
+  \begin{tabular}{@{}llccccc@{}}
+    \toprule
+    Model, seed & $d$ & $g$ (pts) & 95\% CI & $V^\ast$ & Cue-free acc. & Short.\ (\%) \\
+    \midrule
+    Qwen-7B, seed 2 & 0.25 & +36.07 & 32.9--39.3 & 2 & 85.9 & 25.1 \\
+     & 0.70 & +24.37 & 21.5--27.2 & 2 & 86.0 & 67.9 \\
+     & 0.92 & +8.12 & 6.1--10.1 & 3 & 85.7 & 91.4 \\
+     & 0.99 & +0.35 & 0.0--0.8 & 7 & 84.5 & 99.8 \\
+    InternVL3-2B, seed 2 & 0.25 & +39.04 & 35.7--42.4 & 2 & 82.8 & 24.3 \\
+     & 0.70 & +30.31 & 27.2--33.5 & 2 & 82.9 & 64.8 \\
+     & 0.92 & +12.31 & 9.8--14.8 & 3 & 81.3 & 87.3 \\
+     & 0.99 & +1.66 & 0.6--2.8 & 5 & 74.9 & 98.3 \\
+    Qwen-3B, seed 3 & 0.92 & +8.30 & 6.5--10.2 & 3 & 82.5 & 91.7 \\
+     & 0.97 & +2.53 & 1.4--3.8 & 5 & 82.2 & 97.4 \\
+     & 0.99 & +0.26 & $-0.2$--0.7 & 7 & 79.6 & 99.7 \\
+    \bottomrule
+  \end{tabular}}
+  \caption{\textbf{A25 runs (A-OKVQA, length shortcut).} Columns as in Table~\ref{tab:a21}.}
+  \label{tab:a25}
+\end{table}
+
+\begin{table}[tbp]
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{2.4pt}
+\resizebox{\linewidth}{!}{%
+  \begin{tabular}{@{}llccccc@{}}
+    \toprule
+    Model, seed & $d$ & $g$ (pts) & 95\% CI & $V^\ast$ & Cue-free acc. & Short.\ (\%) \\
+    \midrule
+    Qwen-3B, seed 2 & 0.92 & +7.95 & 5.9--10.0 & 3 & 82.0 & 90.7 \\
+     & 0.97 & +3.32 & 2.1--4.6 & 4 & 81.4 & 97.1 \\
+     & 0.99 & +0.09 & $-0.3$--0.4 & 7 & 78.8 & 99.7 \\
+    Qwen-7B, seed 1 & 0.25 & +34.15 & 30.9--37.4 & 2 & 86.1 & 25.1 \\
+     & 0.70 & +22.79 & 20.1--25.4 & 2 & 86.5 & 69.5 \\
+     & 0.92 & +6.46 & 4.9--8.1 & 3 & 85.9 & 93.2 \\
+     & 0.99 & +0.09 & $-0.2$--0.4 & 7 & 79.6 & 99.8 \\
+    \bottomrule
+  \end{tabular}}
+  \caption{\textbf{A23 runs (A-OKVQA, length shortcut).} Columns as in Table~\ref{tab:a21}. Qwen-7B ladder (blur 32/16/8/4/2/intact) at $d=0.70$: 1.31/4.28/7.77/13.80/19.83/22.79; at 0.92: 0.87/1.31/2.71/4.89/5.68/6.46; at 0.99: $-0.17$/$-0.17$/$-0.09$/0.00/0.00/0.09.}
+  \label{tab:a23}
+\end{table}
+
+\begin{table*}[t]
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{4pt}
+  \begin{tabular}{@{}llcccccc@{}}
+    \toprule
+    Series & $d$ & blur 32 & 16 & 8 & 4 & 2 & intact \\
+    \midrule
+    A-OKVQA Qwen-3B, seed 1 & 0.25 & 2.01 & 5.59 & 12.66 & 20.09 & 26.81 & 33.89 \\
+     & 0.70 & 1.66 & 2.27 & 7.07 & 13.19 & 19.91 & 24.45 \\
+     & 0.92 & 1.57 & 1.92 & 3.14 & 4.37 & 6.64 & 8.12 \\
+     & 0.97 & 1.05 & 0.87 & 1.83 & 2.36 & 2.45 & 2.62 \\
+     & 0.99 & 0.00 & 0.09 & 0.26 & 0.00 & 0.35 & 0.35 \\
+    A-OKVQA Qwen-3B, seed 2 & 0.25 & 0.96 & 4.72 & 11.27 & 19.56 & 26.81 & 33.28 \\
+     & 0.70 & 1.66 & 1.92 & 6.38 & 11.53 & 18.34 & 23.49 \\
+     & 0.92 & 0.96 & 1.66 & 2.62 & 5.24 & 7.16 & 7.95 \\
+    A-OKVQA InternVL3-2B & 0.25 & 1.14 & 4.98 & 14.50 & 25.85 & 32.05 & 37.64 \\
+     & 0.70 & 1.31 & 4.54 & 9.96 & 19.91 & 25.94 & 28.91 \\
+     & 0.92 & 0.35 & 2.18 & 3.06 & 6.81 & 10.13 & 11.70 \\
+    A-OKVQA Qwen-3B, position & 0.25 & 1.05 & 2.97 & 10.57 & 19.39 & 25.33 & 31.62 \\
+     & 0.70 & 1.31 & 1.92 & 6.90 & 10.57 & 15.02 & 20.61 \\
+     & 0.92 & 0.79 & 1.31 & 2.88 & 3.93 & 5.76 & 6.64 \\
+    PMC-VQA InternVL3-2B, seed 2 & 0.25 & 0.65 & 0.00 & 3.70 & 6.20 & 8.80 & 13.06 \\
+     & 0.70 & $-0.25$ & $-0.45$ & $-0.05$ & 1.15 & 2.35 & 2.80 \\
+     & 0.92 & 0.05 & 0.15 & 0.05 & 0.15 & 0.20 & 0.25 \\
+    PMC-VQA Qwen-7B, seed 2 & 0.25 & $-0.15$ & 0.20 & 3.25 & 7.15 & 12.21 & 15.31 \\
+     & 0.70 & $-0.35$ & $-0.15$ & 0.50 & 1.60 & 2.70 & 4.10 \\
+     & 0.92 & $-0.05$ & $-0.05$ & $-0.05$ & 0.00 & 0.15 & 0.25 \\
+    \bottomrule
+  \end{tabular}
+  \caption{\textbf{Visual-strength ladders of A21 and A22.} Image benefit (points) by blur radius (px; larger radius = weaker image).}
+  \label{tab:a2xladder}
+\end{table*}

@@ -1,0 +1,25 @@
+\section{Intervention: Can Headroom Be Bought Back?}
+\label{sec:remedy}
+
+If a text-side shortcut locks the decision during training, a model that is kept from using it should retain visual control.
+We test this where the shortcut is planted and then on the real Med-CMR shortcut.
+
+\paragraph{Planted shortcut: product-of-experts works.}
+Product-of-experts debiasing~\cite{clark2019dont,cadene2019rubi} trains the main model on $\log p_{\rm main}+\ell_b$, where $\ell_b$ are the option log-probabilities of a text-only \emph{bias expert} trained on the \emph{other} half of the training questions; the main model alone is used at test time, and a control with weight $0$ isolates the expert.
+With the cue planted at 92\% in PMC-VQA the rescued models regain an image benefit of $+16.5$, $+13.5$ and $+14.0$ points in three seeds (naive: $0.0$--$0.2$; control $+0.25$; $p<10^{-30}$), their veto boundary returns to blur 16--8 (Supp.~R) and their accuracy on cue-free questions rises from $38\%$ to $49$--$51\%$; test-time contrastive scoring does not rescue the locked model.
+The cost is accuracy on cue-\emph{present} questions ($91.7\%$ to $47$--$49\%$), a gain only if the shortcut will not be available when the model is used.
+
+\paragraph{Real shortcut: what was tried.}
+On Med-CMR the same method collapses to chance accuracy because the neural expert is saturated (median probability margin $0.9995$); tempering it keeps accuracy but not the image.
+Three further methods were tried with criteria fixed in advance: an explicit length-rank prior as the bias expert (LP), a penalty that makes the model uncertain when the image belongs to another case of the same modality and organ system (MU), and both (LP+MU); none met the criterion (an image effect of at least $+5$ points on the questions that the reference model found undecided, with accuracy of at least $93.5\%$; Supp.~X).
+A second round used a criterion on all questions (an image effect of at least $+3$ points, accuracy of at least $88\%$), chosen after seeing the first.
+A gentler penalty, UL, which lowers the probability of the correct option when the image belongs to another case, met it in all three seeds at $89.5$--$91.2\%$ accuracy; LP+MU restored image use in four of five seeds but at $77$--$80\%$ accuracy, and UL combined with the length prior collapsed.
+UL's large effect against a black image ($+52$ to $+71$ points) is partly an artefact of the penalty (accuracy with a random other image is below chance, $12.7$--$16.2\%$); against a plausible wrong image of the same modality UL loses $11.5$--$11.8$ points in all three seeds, LP+MU $1.3$--$3.3$ and every other method at most $1.3$ (Supp.~Z).
+So UL buys a measurable dependence on the image for $4$--$6$ points of accuracy.
+The same method on Qwen2.5-VL-7B (two seeds) restores image use again (image effect $+8.0$ and $+12.0$ points, $p<10^{-25}$) at $89.6$--$90.5\%$ accuracy, about 6 points below the unpenalised model, and loses $17.5$--$17.8$ points under a plausible wrong image; its accuracy rises with sharpness, but a blur of radius 8 is no better than a black image ($77.2$ and $79.0\%$ against $82.5$ and $77.6\%$), so heavily blurred images mislead it more than no image (Supp.~Z).
+A pre-registered blur test shows that at 3B this dependence is graded in sharpness but that blur 8 already recovers $81$ and $87\%$ of the gap to a black image in two of three seeds, so it rests mostly on coarse image identity (Supp.~X).
+
+Ten attempts preceded UL (Supp.~X): three cue-removal tests, which were not evaluable, and seven interventions, which were falsified, collapsed, or exploratory. UL's criterion was chosen after these results, so its success is post hoc.
+What the restored dependence is and is not. The penalised model's answers change when the image is replaced, so the dependence is measurable beyond a black image. But a plausible wrong image costs $11.5$--$11.8$ points at 3B and $17.5$--$17.8$ at 7B, which shows that much of the change tracks coarse image identity, as the blur results above also indicate, rather than the answer-relevant region. We therefore claim restored image dependence, not restored visual understanding, and the price is paid in accuracy on the same questions.
+
+The technique is not new; what the study adds is the diagnosis that says when it is needed, a dose-controlled setting in which its effect can be attributed, and a measured price on the real shortcut.

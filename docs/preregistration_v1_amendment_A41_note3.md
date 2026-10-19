@@ -1,0 +1,2 @@
+# Third note to A41 (2026-10-18)
+The first analysis run of scripts/a41_analysis.py picked the partially written rows of the cancelled first start (job 24546370, 3,000 of 24,000 rows) because its glob took the first match; the script now selects the run directory with all 24,000 rows (the complete resubmitted run, job 24669512). Nothing else changed: rules Y1 and Y2, the data, the prompt and the readout are as frozen. The failed first analysis wrote no summary file.

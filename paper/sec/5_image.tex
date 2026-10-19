@@ -1,0 +1,22 @@
+\section{Where the Image Matters}
+\label{sec:image}
+
+\paragraph{Hypothesis and test.}
+On the test and a 700-question development sample (both seen before), the black-image drop was small on average, and every prediction that changed without the image lay among the least text-decisive questions.
+We turned this into six hypotheses with explicit falsifiers (A8) and tested them on 3{,}000 pool questions that had never entered any analysis (drawn after removing earlier samples and same-source cases).
+These cases are \emph{in-sample suspected} for the adapter (Sec.~\ref{sec:setting}); the hypotheses concern structure, not absolute accuracy.
+
+\paragraph{Result.}
+Fig.~\ref{fig:teaser} and Supp.~M give the outcome; all six pre-registered predictions held.
+\emph{(C1)} In \HI{} (2{,}463 questions) no prediction changed between the true and the black image (95\% upper bound 0.15\%) and accuracy is 100\% in every arm.
+\emph{(C4)} It also never changed with a random image or the plausible wrong image of a similar case (0 of 2{,}463 each): confident text is never overruled.
+\emph{(C2)} In \LO{} (239 questions) accuracy is 79.1\% with the image and 67.0\% without ($+12.1$ points; 37 questions fixed, 8 broken; $p=2\times10^{-5}$); the plausible wrong image costs more than a black one (64.0\%, $-15.1$).
+\emph{(C3)} All 52 prediction changes without the image fall outside \HI{} (49 in \LO{}).
+\emph{(C5)} Over all 3{,}000 questions the headline gap is 1.1 points, so an average hides a 12-point effect in 8\% of the data.
+The effect remains on questions where the shortest option is wrong (235 questions, $+6.4$ points, $p=0.003$).
+On the test slice, which is not suspected of being in-sample, the same stratum gives 73.0\% against 61.9\% without the image (63 questions, 11 fixed and 4 broken, $p=0.12$; exploratory, underpowered).
+
+\paragraph{What this is, and is not.}
+The image does influence the model's scores even in \HI{}: the shift of the log-odds between its top two options has median 0.75 (90th percentile 1.75) nats there, against 1.13 (3.38) in \LO{}.
+So ``no veto'' is mainly a \emph{text-saturation} effect: the text margin in \HI{} is large enough that an image signal of this size cannot overturn it, whereas where the text is nearly tied the same signal decides.
+That is exactly a tie-breaker, and it differs from the claim ``the model ignores the image'', which these ablation averages are usually taken to support.

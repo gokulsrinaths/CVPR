@@ -1,0 +1,32 @@
+\section{Setting and Protocol}
+\label{sec:setting}
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=0.78\textwidth]{fig/f0_protocol.pdf}
+  \caption{\textbf{Protocol.} Each question is run with the true image and counterfactual images (black, random, plausible wrong, and a ladder of degraded images); the model's confidence with the black image, $m_b$, defines the text-saturation stratum (threshold fixed on unlabeled data), and answers are compared across arms within each stratum.}
+  \label{fig:protocol}
+\end{figure*}
+
+\paragraph{Benchmarks.}
+\emph{Med-CMR}~\cite{gong2025medcmr} as released for MedReason~2026~\cite{medreason2026}: 14{,}398 five-option training MCQs and a frozen 711-question test slice carved by the challenge system's authors; the 16{,}836 remaining cases form a pool from which all fresh samples are drawn after removing same-source cases (identical images or captions; no patient identifiers exist, so claims are case-disjoint and near-duplicate-filtered, never patient-disjoint).
+\emph{PMC-VQA}~\cite{zhang2023pmcvqa}: four-option questions on PubMed Central figures, split by source article into 9{,}277 training questions, 1{,}999 clean test questions (E1) and 3{,}000 held-out questions (E2).
+\emph{OmniMedVQA}~\cite{hu2024omnimedvqa} (open-access subset, Sec.~\ref{sec:general}); \emph{A-OKVQA}~\cite{schwenk2022aokvqa} (four-option questions on photographs, Sec.~\ref{sec:dose}).
+
+\paragraph{Systems.}
+(1)~The released adapter of a top-3 MedReason~2026 system (Qwen3.5-9B, 4-bit, rank-16 LoRA~\cite{hu2022lora}); we reproduced its test accuracy (683/711, against 684 reported) and its weights are byte-identical to the released container's.
+(2)~Public models fine-tuned by us with one recipe: Qwen2.5-VL-3B and -7B~\cite{bai2025qwen25vl} and InternVL3-2B~\cite{zhu2025internvl3} (LoRA $r{=}16$ on the language layers, one epoch, learning rate $10^{-4}$, batch 16, images at most 448\,px, loss on the answer letter).
+
+\paragraph{Readout, counterfactual images, text saturation.}
+We read the log-probabilities of the option letters at the answer position, take the arg\,max as the prediction and the margin (top-1 minus top-2 probability) as the confidence.
+Each question is run with the true image and with counterfactuals: a black image, the image of another question, and the nearest-neighbour image (PubMedCLIP~\cite{eslami2023pubmedclip}), a plausible wrong one.
+\emph{Text saturation} is the margin $m_b$ with the black image; with $\tau$ the 15th percentile of the margins of 700 unlabeled validation questions, we call a question \HI{} (text-decisive) if $m_b\ge\tau$, \LO{} (text-undecided) if $m_b<0.90$ and \MID{} otherwise.
+The \emph{image benefit} is $g=\mathrm{acc}(\text{image})-\mathrm{acc}(\text{black image})$ (points); an \emph{override} is a prediction that differs from the black-image answer.
+
+\paragraph{Visual ladder and planted shortcuts.}
+To vary the visual evidence we replace the true image by Gaussian blurs of radius 32, 16, 8, 4 and 2\,px (on the 448\,px image) and by the intact image (a second ladder downsamples to 8--128\,px).
+To vary the shortcut we plant a neutral nonvisual cue at a controlled strength $d$ (the share of questions in which the correct option carries it): neutral filler words on all options so that the correct option is the shortest (\emph{length}), or the correct option placed at position A (\emph{position}); training and test options are planted alike (Sec.~\ref{sec:dose}).
+
+\paragraph{Pre-registration.}
+All confirmatory experiments follow one pre-registration with dated amendments (A0--A24), each frozen and SHA-256-hashed before the run it governs; exploratory results are labelled; tests are exact McNemar and paired bootstrap, with Spearman permutation tests and Holm correction for the dose-response family.
+Failed and not-evaluable tests are reported.

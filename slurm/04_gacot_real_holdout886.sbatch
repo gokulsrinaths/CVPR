@@ -1,0 +1,65 @@
+#!/bin/bash
+#SBATCH --job-name=gacot_real_holdout886
+#SBATCH --account=effectorfold
+#SBATCH --partition=mb-h100
+#SBATCH --qos=fast
+#SBATCH --gres=gpu:h100:1
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=64G
+#SBATCH --time=03:00:00
+#SBATCH --output=/gscratch/gokulsrinathseetharam/medical-vqa-retrieve-verify/logs/%x_%j.out
+#SBATCH --error=/gscratch/gokulsrinathseetharam/medical-vqa-retrieve-verify/logs/%x_%j.err
+
+set -euo pipefail
+
+PROJECT_ROOT=/gscratch/gokulsrinathseetharam/medical-vqa-retrieve-verify
+SUITE=${PROJECT_ROOT}/scoring_suite/scoring
+HOLDOUT=${PROJECT_ROOT}/data/holdout886
+
+export HF_HOME=${PROJECT_ROOT}/hf_cache
+export TRANSFORMERS_CACHE=${PROJECT_ROOT}/hf_cache
+export TMPDIR=${PROJECT_ROOT}/tmp
+export HF_HUB_OFFLINE=1
+export TRANSFORMERS_OFFLINE=1
+mkdir -p "${HF_HOME}" "${TMPDIR}"
+
+export MEDREASON_SYSTEM=custom
+export MEDREASON_INPUT_DIR=${HOLDOUT}
+export MEDREASON_OUTPUT_DIR=${HOLDOUT}/run_output
+export MEDREASON_OUTPUT_FILE=${MEDREASON_OUTPUT_DIR}/results.json
+export MEDREASON_MODEL_PATH=${PROJECT_ROOT}/models/base_model
+export MEDREASON_ADAPTER_PATH=${PROJECT_ROOT}/models/adapter
+export MEDREASON_DETECTOR_PATH=${PROJECT_ROOT}/models/detector.pkl
+export TRITON_CACHE_DIR=${PROJECT_ROOT}/tmp/triton_cache
+mkdir -p "${MEDREASON_OUTPUT_DIR}"
+
+module load miniconda3/24.3.0
+source activate /gscratch/gokulsrinathseetharam/conda_envs/medreason_env
+
+echo "=== REAL HELD-OUT REPRODUCTION — seed=42, 886 cases ==="
+echo "This is the exact held-out slice behind the paper's 96.2%/3.45/2.51/1.61 numbers."
+echo "MCQ accuracy here is a REAL, exact-match number against real ground truth."
+echo "GT/VA use PROXY judges (not the official Llama-3.1-70B / Qwen-2.5-VL judges) —"
+echo "those two numbers are NOT the official metric, only MCQ accuracy is directly comparable."
+echo
+echo "Job ID: ${SLURM_JOB_ID}"
+echo "Node: $(hostname)"
+echo
+
+echo "--- Step 1: inference over 886 held-out cases ---"
+cd "${PROJECT_ROOT}/code"
+python process.py
+
+echo
+echo "--- Step 2: validate_submission.py ---"
+cd "${SUITE}"
+python validate_submission.py --cases "${HOLDOUT}/cases.json" --results "${MEDREASON_OUTPUT_FILE}"
+
+echo
+echo "--- Step 3: score_all.py (MCQ = real; GT/VA = proxy judges) ---"
+python score_all.py --cases "${HOLDOUT}/cases.json" --ground-truth "${HOLDOUT}/ground_truth.json" \
+    --results "${MEDREASON_OUTPUT_FILE}" --out "${MEDREASON_OUTPUT_DIR}/scores.json"
+
+echo
+echo "=== SCORES ==="
+cat "${MEDREASON_OUTPUT_DIR}/scores.json"

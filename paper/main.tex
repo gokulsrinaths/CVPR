@@ -1,0 +1,48 @@
+% CVPR 2027 submission (built on the CVPR 2026 author kit); see https://github.com/cvpr-org/author-kit
+\documentclass[10pt,twocolumn,letterpaper]{article}
+
+\usepackage[review]{cvpr}      % REVIEW version (anonymous)
+
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{microtype}
+\input{preamble}
+
+\definecolor{cvprblue}{rgb}{0.21,0.49,0.74}
+\usepackage[pagebackref,breaklinks,colorlinks,allcolors=cvprblue]{hyperref}
+
+\def\paperID{*****}
+\def\confName{CVPR}
+\def\confYear{2027}
+
+\newcommand{\HI}{{\small\textsf{HI}}}
+\newcommand{\MID}{{\small\textsf{MID}}}
+\newcommand{\LO}{{\small\textsf{LO}}}
+\newcommand{\pend}[1]{{\color{red}#1}}
+
+\title{When Text Locks Out Vision: Measuring Visual Headroom in Multiple-Choice VQA}
+
+\author{Anonymous CVPR submission\\
+Paper ID \paperID}
+
+\begin{document}
+\maketitle
+\input{sec/r0_abstract}
+\input{sec/r1_intro}
+\input{sec/2_related}
+\input{sec/r3_failure}
+\input{sec/r4_isolation}
+\input{sec/r5_quant}
+\input{sec/r6_explain}
+\input{sec/r7_intervene}
+\input{sec/r8_stress}
+\input{sec/r9_disc}
+{
+    \small
+    \bibliographystyle{ieeenat_fullname}
+    \bibliography{main}
+}
+\end{document}

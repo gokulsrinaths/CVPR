@@ -1,0 +1,21 @@
+\section{Discussion}
+\label{sec:disc}
+
+\paragraph{What the evidence supports.}
+We recommend that a benchmark report its visual headroom (blind ceiling, black-image accuracy and true-image accuracy), the accuracy on counter-cue questions where a cue is known, and, for a system, its accuracy with and without the image on the text-undecided stratum with the share of text-decisive questions.
+
+\paragraph{Limits.}
+\emph{Sufficiency.} The causal claim is for a planted shortcut, not for Med-CMR's own cue; the dose-response covers two benchmarks, a held-out prediction held for two further models, but the lock-out strength differs between benchmarks and is not explained by natural variation (Sec.~\ref{sec:general}), InternVL3-2B was not locked out at $0.99$, and larger models, other shortcuts and other tasks are untested.
+\emph{Real shortcut.} Ten earlier attempts did not meet their criteria (Supp.~X), UL's criterion was chosen after them, and the cue is not the only barrier; the dependence that UL induces rests mostly on coarse image identity at 3B and less so at 7B.
+\emph{Method.} The faithfulness audit uses reproductions of the organisers' judge at three sizes, not their judge (size unknown); no patient identifiers exist (case-disjointness and near-duplicate filtering only; thresholds were set by an AI assistant's review of montages); the released adapter's training membership is unknown; the analyses were implemented with an AI coding assistant under the hashed pre-registration.
+
+\paragraph{Ethics and broader impact.}
+We use MedReason~2026 (CC BY-NC 4.0, as stated by its organisers), PMC-VQA (CC BY-SA 4.0), the open-access subset of OmniMedVQA, A-OKVQA, MedXpertQA-MM~\cite{zuo2025medxpertqa} and MMMU~\cite{yue2024mmmu} under their published terms, for research only; nothing here supports clinical use.
+Statements about released systems describe measured behaviour on stated benchmarks and inputs, not their clinical safety or their developers' intent, and the faithfulness audit uses reproductions of a judge, not the organisers' own.
+
+\paragraph{Conclusion.}
+\emph{Demonstrated:} in our controlled setting, a nonvisual shortcut locks the decision at a benchmark-dependent strength, and a penalty restores measurable image dependence for about 4 to 6 points of accuracy, partly on coarse image identity.
+
+\emph{Not demonstrated:} a universal lock-out law, a mechanism explaining the difference between benchmarks, or restored semantic visual understanding.
+
+\emph{Why it matters:} VQA evaluations should report visual headroom alongside accuracy, because high accuracy alone does not show that the image contributes.

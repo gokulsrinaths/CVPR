@@ -1,0 +1,13 @@
+\section{The Benchmark Makes Text Decisive}
+\label{sec:shortcut}
+
+Before asking where the image matters, we ask why the text so often decides.
+A rule with no model at all, ``pick the shortest option'', is correct for 12{,}579 of 13{,}687 pool MCQs (91.90\%, 95\% CI 91.44--92.35; a range of 88--94\% had been fixed beforehand), and for 648 of 711 test MCQs (91.1\%).
+The longest option is correct in only 47 cases (0.3\%); just 967 questions (7.1\%) have a correct option that is not the shortest.
+The rule works in all seven task types (91.0--97.2\%) and all ten modalities (89.0--93.3\%), so it is a property of how the options were written.
+
+The adapter's picks coincide with this cue: it chooses the shortest option in about 91\% of cases, and its accuracy tracks the cue's strength.
+Supp.~Fig.~3 bins the test questions by the length of the correct option relative to the wrong ones: accuracy is 99.5\% when the correct option is under half as long and 73.5\% when the lengths are similar; the black-image curve follows it closely.
+This is a dose--response \emph{correlation} (a post hoc, exploratory analysis of already seen test data).
+Questions with similar option lengths may be harder in other ways, and our two attempts to make a causal test by rewriting options to equal length with a 7B rewriter failed pre-registered quality gates (5--18\% of questions passed; Supp.~B), so the causal role of length is not established here (but see Sec.~\ref{sec:pmc}: planting such a cue is sufficient).
+On the 63 test questions where the shortest option is wrong, the adapter is still right on 51 (81\%), so it also uses information beyond length.

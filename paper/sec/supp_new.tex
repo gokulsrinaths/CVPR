@@ -1,0 +1,182 @@
+
+\section{Dose-response and the visual veto boundary (A17)}
+\label{app:dose17}
+
+Qwen2.5-VL-3B, PMC-VQA, the A11 recipe; the length shortcut planted with neutral filler on all options at strength $d$ (rank-based assignment: realised cue rate equals $d$ to within one question; nested across doses; $d=0.25$ is the filler control); three seeds (20261011--13) for each of the six doses and one seed for the answer-position shortcut at three doses; evaluation on the 1{,}999 clean test questions with true, black, random, nearest-neighbour and degraded images (Gaussian blur radius 32, 16, 8, 4, 2\,px; downsampling to 8--128\,px for $d\in\{0.25,0.70,0.92\}$ in one seed).
+Table~\ref{tab:dose17} gives the per-dose results, Table~\ref{tab:h17} the pre-registered tests, Fig.~\ref{fig:s_dose} the shortcut habit and the text margin, and Figs.~\ref{fig:s_phase}--\ref{fig:s_second} the override map, the boundary and the second shortcut.
+The veto boundary $V^\ast$ is the weakest ladder level (1 = blur 32, \dots, 6 = intact) at which the image benefit is at least $+2.0$ points with a paired-bootstrap lower bound of at least $+1.0$; 7 means that no level qualifies.
+
+\begin{table*}[h]
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{4pt}
+  \resizebox{\textwidth}{!}{%
+  \begin{tabular}{@{}rcccccccc@{}}
+    \toprule
+    $d$ (\%) & $g$(intact), mean (sd) & $V^\ast$ (3 seeds) & Shortest pick (\%) & Median $M_T$ & Acc.\ true / black (\%) & Cue-free acc.\ (\%) & Override (\%) \\
+    \midrule
+    25 & 13.5 (0.5) & 4,3,3 & 22 & 0.29 & 50.8 / 37.4 & 51.9 & 39.4 \\
+    40 & 13.2 (0.7) & 3,4,4 & 41 & 0.33 & 52.8 / 39.6 & 50.0 & 36.9 \\
+    55 & 8.0 (0.6) & 5,4,5 & 75 & 0.79 & 60.6 / 52.6 & 46.5 & 19.9 \\
+    70 & 3.4 (0.2) & 5,5,5 & 93 & 1.67 & 72.1 / 68.8 & 42.9 & 6.9 \\
+    85 & 0.4 (0.2) & 7,7,7 & 99 & 2.58 & 85.0 / 84.6 & 40.4 & 1.2 \\
+    92 & 0.1 (0.1) & 7,7,7 & 100 & 3.21 & 91.7 / 91.6 & 38.1 & 0.3 \\
+    \bottomrule
+  \end{tabular}%
+  }
+  \caption{\textbf{Shortcut dose-response (A17; three seeds, Qwen2.5-VL-3B, PMC-VQA E1).} $g$(intact): image benefit of the intact image (points); $V^\ast$: veto boundary by seed; shortest pick: share of predictions equal to the shortest option; median $M_T$: median black-image log-odds margin; accuracies on the matched (planted) test; cue-free acc.: accuracy on the original, unplanted options; override: share of intact-image predictions that differ from the black-image answer.}
+  \label{tab:dose17}
+\end{table*}
+
+\begin{table}[h]
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{3pt}
+  \resizebox{\columnwidth}{!}{%
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    Test & Statistic & Result \\
+    \midrule
+    H1 benefit vs dose & $\rho=-0.963$, $p<10^{-4}$ & supported \\
+    H2 boundary vs dose & $\rho=+0.943$ & supported \\
+    H3a margin vs dose & $\rho=+0.975$ & supported \\
+    H3b margin as predictor & RMSE 1.66 vs 1.22 (limit 1.53) & \emph{not supported} \\
+    H4 override vs dose & $\rho=-0.988$ & supported \\
+    H5 downsampling ladder & $V^\ast$: 3, 5, none & supported \\
+    P1--P4 position shortcut & $g=+17.8,+6.4,0.0$; $V^\ast=3,5,7$ & supported \\
+    \bottomrule
+  \end{tabular}%
+  }
+  \caption{\textbf{Pre-registered tests of A17.} Permutation $p$-values (10{,}000 permutations of the dose within seeds), Holm-corrected over H1--H4.}
+  \label{tab:h17}
+\end{table}
+
+\begin{figure*}[h]
+  \centering
+  \includegraphics[width=0.95\textwidth]{fig/f7_dose_response.pdf}
+  \caption{\textbf{Shortcut dose-response on PMC-VQA} (Qwen2.5-VL-3B, three seeds; thin lines: seeds). (a)~Image benefit of the intact image; dashed: the answer-position shortcut (one seed). (b)~Share of predictions equal to the shortest option. (c)~Median text margin with a black image (log-odds).}
+  \label{fig:s_dose}
+\end{figure*}
+
+\begin{figure*}[h]
+  \centering
+  \includegraphics[width=0.95\textwidth]{fig/f7_phase_diagram.pdf}
+  \caption{\textbf{Image benefit and override rate by shortcut strength and visual strength} (mean of three seeds).}
+  \label{fig:s_phase}
+\end{figure*}
+
+\begin{figure*}[h]
+  \centering
+  \includegraphics[width=0.95\textwidth]{fig/f7_boundary_shift.pdf}
+  \caption{\textbf{The veto boundary and the text margin.} (a)~$V^\ast$ against the dose. (b)~Image benefit against the median text margin (blue: $d\le0.55$; orange: $d\ge0.70$).}
+  \label{fig:s_boundary}
+\end{figure*}
+
+\begin{figure*}[h]
+  \centering
+  \includegraphics[width=0.95\textwidth]{fig/f7_second_shortcut.pdf}
+  \caption{\textbf{Second shortcut (answer position).} (a)~Image benefit against the dose for both shortcuts. (b)~Ladders for the position shortcut at three doses.}
+  \label{fig:s_second}
+\end{figure*}
+
+
+\section{Shortcut-rescue training (A18, A20)}
+\label{app:rescue}
+
+A text-only bias expert (Qwen2.5-VL-3B, black image, A11 recipe) is trained on one half of the training questions and scores the other half; the main model is trained on $\log p_{\rm main}+\ell_b$ (weight 1) and used alone at test time; the control uses the same letter-restricted loss with weight 0.
+The experts' cross-fitted accuracy is 91.5\% and 91.9\% (folds A, B) at $d=0.92$ and 68.1\% and 70.4\% at $d=0.70$, i.e.\ they have learned the shortcut from other questions.
+Table~\ref{tab:rescue} gives each run and Fig.~\ref{fig:rescue} the visual ladder and the accuracies; the naive models of the same doses are in Table~\ref{tab:dose17}.
+On Med-CMR the rescue models collapse to chance accuracy (19.8\%, 21.3\%, 21.5\%; A9: 95.5\%) because the A12 expert is saturated (median margin $0.9995$) and gives the main model almost no gradient (M-F not supported).
+A20 (exploratory, three seeds) tempers the expert (temperature 3) so that it no longer saturates, and fails too: on the 410-question low-confidence set the image effect is $+0.24$, $-0.24$ and $-0.24$ points (required: $\ge+5$ in two of three seeds), FRESH3000 accuracy is $95.7$, $95.0$ and $95.6\%$, the shortest option is still picked $90.2$, $90.4$ and $90.3\%$ of the time on the test slice, and no text-decisive answer changes.
+
+\begin{figure*}[h]
+  \centering
+  \includegraphics[width=0.95\textwidth]{fig/f9_rescue.pdf}
+  \caption{\textbf{Shortcut-rescue training} (PMC-VQA, length cue planted at 92\%; three seeds; the control is one seed). (a)~Image benefit along the visual ladder: the naive and the control model are locked, the rescued model follows the model trained without a cue. (b)~Accuracy on the cue-present and on the cue-free test questions.}
+  \label{fig:rescue}
+\end{figure*}
+
+\begin{table}[h]
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{2.4pt}
+  \resizebox{\columnwidth}{!}{%
+  \begin{tabular}{@{}lcccccc@{}}
+    \toprule
+    Run (seed) & $g$ & Acc.\ planted & Acc.\ cue-free & Short.\ (\%) & $M_T$ & $V^\ast$ \\
+    \midrule
+    Rescue 92\% (1) & +16.46 & 47.0 & 50.7 & 44 & 0.12 & 2 \\
+    Rescue 92\% (2) & +13.51 & 47.6 & 49.2 & 45 & 0.25 & 3 \\
+    Rescue 92\% (3) & +14.01 & 48.8 & 51.2 & 46 & 0.12 & 2 \\
+    Control $w{=}0$, 92\% (1) & +0.25 & 92.0 & 37.7 & 100 & 3.25 & 7 \\
+    Rescue 70\% (1) & +16.06 & 49.6 & 51.1 & 38 & 0.12 & 3 \\
+    \bottomrule
+  \end{tabular}%
+  }
+  \caption{\textbf{Shortcut-rescue runs (PMC-VQA, planted length cue).} $g$: image benefit (points); accuracies (\%) on the planted and on the cue-free test; short.: share of shortest-option predictions; $M_T$: median text margin.}
+  \label{tab:rescue}
+\end{table}
+
+\section{7B seeds and OmniMedVQA (A16)}
+\label{app:a16}
+
+\paragraph{7B seeds.}
+Two further seeds of Qwen2.5-VL-7B (seeds 20261004 and 20261005), on A30 GPUs with gradient checkpointing.
+Med-CMR (FRESH3000): accuracy 96.4\% and 96.0\%, all-question gap $+0.33$ and $-0.03$, text-undecided stratum $n=402$ and $367$ with image effect $+2.49$ ($p=0.099$) and $-0.27$ ($p=1.0$), no text-decisive answer changed, shortest-option share 92.1\% and 92.0\%, alarm 106/108 and 119/121 errors (R1--R4 supported).
+PMC-VQA (E1): accuracy 54.6\% and 54.6\%, all-question gap $+14.5$ and $+15.5$, undecided-stratum effect $+18.6$ ($n=635$) and $+20.5$ ($n=516$), shortest-pick 24.8\% and 24.7\% (Q1--Q3 supported).
+
+\paragraph{OmniMedVQA.}
+The open-access subset has 88{,}996 questions; 82{,}082 have four distinct options with a gold option among them, and the correct option is the unique shortest in 27.0\% of these.
+We cap every source dataset at 1{,}200 questions, split by group (an image; a patient where a patient folder exists) into 2{,}000 test (E1), 3{,}000 held-out (E2), 700 unlabeled validation and 9{,}277 training questions, with the correct option the unique shortest in 22.2\% of E1.
+Zero-shot accuracy on E1 is 76.3\%, 75.1\% and 81.2\% (Qwen 3B, Qwen 7B, InternVL3-2B).
+After fine-tuning (A11 recipe): accuracy with the true / blur 8 / blur 24 / black image 98.9 / 96.5 / 93.7 / 93.2\% (3B), 98.8 / 97.7 / 95.3 / 91.7\% (7B) and 98.7 / 93.7 / 87.2 / 82.5\% (InternVL3-2B); text-confident questions ($m_b\ge0.99$): 1{,}312, 1{,}323 and 1{,}061 of 2{,}000, of which 0.2\%, 0.7\% and 1.8\% change under the black image (O4 supported); shortest-pick 21.8\%, 21.8\%, 22.0\% against 22.2\% in the data (O1 supported); the blur ladder rises monotonically (O3 supported).
+O2 (the image gap is at least $+5$ points if and only if the median black-image log-odds margin is below 1.5) failed for all three systems: gaps $+5.7$, $+7.1$, $+16.2$ against medians $7.6$, $8.3$, $5.9$.
+
+\section{Held-out models: InternVL3-2B and Qwen-7B (A19)}
+\label{app:a19}
+
+The prediction (Qwen-3B curve of A17: image benefit $13.5$, $3.4$, $0.1$ points at $d=0.25$, $0.70$, $0.92$, tolerance $\pm4$) was fixed in the frozen amendment A19 and the analysis script was hashed before any of these runs finished.
+Seed 20261011 (A19) and, with the same rules, seed 20261012 (A22; Table~\ref{tab:a22s}), PMC-VQA with the planted length cue, A30 GPUs with gradient checkpointing.
+Rule A (all deviations $\le4$), rule B (veto boundary exists at $d=0.25$, none at $d=0.92$) and rule C (monotone fall: $g(0.25)-g(0.70)\ge2$, $g(0.70)-g(0.92)\ge1$, $g(0.92)\le2$) hold for both models in both seeds (Table~\ref{tab:a19} for the first seed); the blur ladders of the first seed are in Table~\ref{tab:a19ladder} and those of the second in Table~\ref{tab:a2xladder}.
+
+\begin{table}[h]
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{2.4pt}
+  \resizebox{\columnwidth}{!}{%
+  \begin{tabular}{@{}lcccccccc@{}}
+    \toprule
+    Model & $d$ & $g$ & Dev. & $V^\ast$ & $M_T$ & Acc.\ planted & Acc.\ cue-free & Short.\ (\%) \\
+    \midrule
+    InternVL3-2B & 0.25 & +13.71 & 0.21 & 3 & 0.25 & 50.0 & 51.4 & 21.2 \\
+    InternVL3-2B & 0.70 & +2.75 & 0.65 & 5 & 1.63 & 71.7 & 37.3 & 93.6 \\
+    InternVL3-2B & 0.92 & $-0.05$ & 0.15 & 7 & 3.25 & 91.5 & 31.1 & 99.3 \\
+    Qwen-7B & 0.25 & +15.46 & 1.96 & 3 & 0.25 & 54.6 & 54.6 & 21.5 \\
+    Qwen-7B & 0.70 & +4.55 & 1.15 & 4 & 1.50 & 72.8 & 46.2 & 89.9 \\
+    Qwen-7B & 0.92 & +0.10 & 0.00 & 7 & 3.25 & 92.0 & 35.8 & 99.9 \\
+    \bottomrule
+  \end{tabular}%
+  }
+  \caption{\textbf{Held-out transfer (A19, seed 20261011).} $g$: image benefit of the intact image (points); Dev.: absolute deviation from the prediction; $V^\ast$: veto boundary (7 = none); $M_T$: median black-image log-odds margin; accuracies (\%) on the planted and on the cue-free (original) test questions; short.: share of shortest-option predictions.}
+  \label{tab:a19}
+\end{table}
+
+\begin{table}[h]
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{3pt}
+  \begin{tabular}{@{}lcccccc@{}}
+    \toprule
+    Model, $d$ & blur 32 & 16 & 8 & 4 & 2 & intact \\
+    \midrule
+    InternVL3-2B, 0.25 & $-0.55$ & 0.65 & 3.40 & 7.70 & 10.26 & 13.71 \\
+    InternVL3-2B, 0.70 & $-0.05$ & 0.10 & 0.55 & 1.40 & 2.30 & 2.75 \\
+    InternVL3-2B, 0.92 & 0.05 & 0.00 & 0.05 & 0.00 & $-0.10$ & $-0.05$ \\
+    Qwen-7B, 0.25 & $-0.05$ & 1.40 & 3.65 & 7.70 & 11.61 & 15.46 \\
+    Qwen-7B, 0.70 & $-0.15$ & 0.30 & 0.80 & 2.00 & 2.85 & 4.55 \\
+    Qwen-7B, 0.92 & 0.00 & 0.00 & 0.00 & $-0.05$ & 0.00 & 0.10 \\
+    \bottomrule
+  \end{tabular}
+  \caption{\textbf{Visual-strength ladders of the held-out models (A19).} Image benefit (points) by blur radius (larger radius = weaker image); the veto boundary is the weakest level with benefit $\ge2.0$ (lower bootstrap bound $\ge1.0$).}
+  \label{tab:a19ladder}
+\end{table}

@@ -1,0 +1,11 @@
+\begin{abstract}
+Vision-language models are often found to answer correctly without the image, and ablations of tuned models show small average drops.
+We ask a causal question: how does the strength of a nonvisual shortcut interact with the strength of the visual evidence to decide whether the image can change the answer?
+We measure \emph{text saturation}, the model's confidence when the image is blanked, and test counterfactual images and a six-level ladder of image strength.
+On Med-CMR, a medical benchmark where the correct option is the shortest in 92\% of questions, 82--84\% of the questions of three benchmark-tuned model families are text-decisive and no counterfactual image changes any of their answers, while on PMC-VQA, without that cue, the same models lose 14 points without the image.
+That contrast is observational; to test whether the shortcut is the cause we plant a neutral shortcut at graded strengths.
+On PMC-VQA the image benefit falls monotonically from $+13.5$ to $+0.1$ points (three seeds, $\rho=-0.96$) and the weakest helpful image strength, the \emph{visual veto boundary}, moves from a blur of radius 8 to beyond the intact image; a second shortcut that changes no text gives the same pattern (one seed), and a prediction written down before the runs held for two further models in two seeds (pre-registered tolerance $\pm4$ points).
+On natural photographs (A-OKVQA) the dose-response and, for the length shortcut, the boundary shift replicate, but the decision locks at a much higher strength ($d=0.99$ against $0.85$--$0.92$ on PMC-VQA; two seeds of Qwen-3B and one of Qwen-7B), and three of our pre-registered criteria failed.
+A product-of-experts remedy restores visual control in the controlled setting, but five attempts to undo the real Med-CMR shortcut, four of them pre-registered, did not.
+All confirmatory tests were pre-registered and hash-chained, and we report those that failed, among them a competition score, three attempts to remove the cue, and rules on two further benchmarks.
+\end{abstract}

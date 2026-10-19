@@ -1,0 +1,2 @@
+# Second note to A41 (2026-10-18)
+A41 (zero-shot Qwen2.5-VL-3B on six benchmarks; frozen 2026-10-12) was cancelled before producing any result (note of 2026-10-12). It is resubmitted on 2026-10-18 at the author request, with the frozen amendment, script (scripts/a41_zeroshot.py), job file (slurm/50_a41_zeroshot.sbatch) and analysis script (scripts/a41_analysis.py) unchanged; its rules Y1 and Y2 apply as written and its purpose is unchanged (the zero-shot point at the size of the fine-tuned models, now also the N = 0 point next to the A44 learning curve).

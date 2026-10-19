@@ -1,0 +1,438 @@
+\section{Pre-registration log}
+\label{app:prereg}
+
+Table~\ref{tab:amend} lists the amendments to the single pre-registration. Each document and each script it governs was SHA-256-hashed and timestamped before the corresponding run; amendments are appended, never edited, and cross-reference what had already been seen. ``Gate'' rows are the pre-specified checks of the original document.
+
+\begin{table*}[h]
+  \centering
+  \small
+  \resizebox{\textwidth}{!}{%
+  \begin{tabular}{@{}l p{0.34\textwidth} p{0.50\textwidth}@{}}
+    \toprule
+    ID & Test & Outcome \\
+    \midrule
+    v1 H3 / A0, A2 & Shortest-option rule on 13{,}687 pool MCQs (range 88--94\% fixed in advance); definitions and freeze procedure & Supported: 91.90\% (CI 91.44--92.35) \\
+    Gate B (validity) & Is the pool in-sample for the adapter? (confidence rule; accuracy trigger) & Pool \emph{in-sample suspected} (accuracy 98.1\%, lower bound above test); confidence rule not met; test slice not suspected \\
+    Gate B/C H1 & Unadapted Qwen3.5-9B: black-image loss $\le5$ points & Not evaluable (teacher-forced readout at chance, 21.7\%) \\
+    Gate C H2 & Adapter, black-image loss $\le5$ points on 700 dev MCQs & Supported: $-1.1$ points (97.0\% vs 95.9\%), in-sample suspected \\
+    A3 & Replacement readout for H1 (generated answer, thinking off) & Not evaluable (2.7\% parsable; a 16-token limit was my design flaw) \\
+    A4 & Qwen2.5-VL-7B, letter-only generation, true vs black image & Not evaluable (28.0\% accuracy, below the 60\% floor) \\
+    A1 & Dev-split decision, retrieval design, five predictions (H4--H7) & All five supported (retrieval net $-5$; threshold from unlabeled validation) \\
+    A5 & Selective prediction (transfer of the threshold, margin vs shortcut score, shortest-wrong subset) & All three supported \\
+    A6, A7 & Length-equalising rewrite (two designs; gates on pass rate, manipulation, selection bias) & Both not evaluable (17.6\% and 5.2\% of questions passed; passing questions were unrepresentative) \\
+    A8 & Image as tie-breaker, fresh 3{,}000 questions (C1--C6) & All six supported \\
+    A9 & Controlled fine-tuning study, two public VLMs, unseen fresh questions (Sec.~4 of the main paper) & G1 (habit created) and G4 (alarm) supported for both models; G3 \emph{falsified} for both: no-veto holds (C1, C3, C4) but the image effect on undecided questions is $-1.0$ and $+1.8$ points (C2 required $\ge+5$) \\
+    A10 & Recipe robustness: four single-factor variants (3 epochs, 896\,px, vision-tower LoRA, 7B with 3 epochs) & R1--R4 supported for all four: image effect on undecided questions $+2.6$, $+1.7$, $-0.7$, $-4.1$ points (none significant) \\
+    A11 & Second benchmark without the length cue (PMC-VQA; Qwen 3B and 7B, InternVL3-2B) and a third family on Med-CMR; five predictions Q1\textendash{}Q5 and R1\textendash{}R5 & Med-CMR with InternVL3-2B: R1\textendash{}R5 supported. PMC-VQA: Q1 (no habit), Q2 (image gap $+13.7$ to $+14.9$ points), Q3 (undecided-stratum effect $+14.5$ to $+18.7$) supported for all three; Q5 supported on E1 and not on E2 (ratio $1.48$, $1.48$, $1.36$ against $1.5$); Q4 \emph{not evaluable} (no question has a black-image margin $\ge0.99$) \\
+    A12 & Length filler (evaluation-time and training-time), counterfactual-evidence alarm combiner, saturation-aware training & L1 \emph{not evaluable} (filler costs 6--11 points); L2: models read through the filler (91\% still pick the originally shortest option); M1 (alarm) all three predictions false; M2 (weighting) false on image effect and accuracy gain \\
+    A13 & Planting a length cue in PMC-VQA (three systems) & I1, I3, I4 supported (shortest 99.7\%, image gap $\approx0$ against $+14$, accuracy on original options $-14$ to $-22$ points); I2 \emph{falsified} (no question with margin $\ge0.99$) \\
+    A14 & Three seeds (Qwen 3B, both benchmarks); threshold sensitivity (seven systems) & All predictions supported (Med-CMR R1--R4 and PMC-VQA Q1--Q3 for both extra seeds; T1--T3) \\
+    A15 & Text--vision competition score (ten systems) and visual-strength factorial (blur) & C1 and C2 \emph{falsified} (the ratio does not beat saturation; $0/10$ held-out wins); C3 supported; F1--F3 supported for all three families \\
+    A16 & 7B seeds (Med-CMR, PMC-VQA) and a third benchmark (OmniMedVQA; Qwen 3B/7B, InternVL3-2B) & S1, S2 supported; O1, O3, O4 supported; O2 (lock rule on the median margin) \emph{falsified} for all three systems \\
+    A17 & Shortcut dose-response (length, six doses, three seeds), veto boundary, second shortcut (position) & H1, H2, H3a, H4, H5 and P1--P4 supported; H3b \emph{falsified} \\
+    A18 & Shortcut-rescue (product-of-experts) training; training-free contrastive baseline & M-A, M-B, M-D, M-E, M-G supported; M-F (Med-CMR) \emph{falsified} (collapse to chance) \\
+    A19 & Held-out transfer of the dose-response to InternVL3-2B and Qwen-7B & Rules A, B, C supported for both models (largest deviation $0.65$ and $1.96$ points; second seed in A22) \\
+    A20 & Exploratory: tempered bias expert for Med-CMR & \emph{falsified}: image effect $+0.2$, $-0.2$, $-0.2$ points (required $\ge+5$ in two of three seeds); shortest-option picks 90\% \\
+    A21 & Non-medical replication of the dose-response on A-OKVQA (Qwen 3B two seeds, InternVL3-2B) & R1, R3 supported in three series; R2 \emph{falsified} (accuracy on cue-free questions does not fall); R4 \emph{falsified} (benefit $+8$ to $+12$ points at $d=0.92$) \\
+    A22 & Higher strengths (0.97, 0.99) and position shortcut on A-OKVQA; second seed of A19 & H1, H2, P1, P2 and S supported (lock-out reached at $d=0.99$, one seed); P3 \emph{falsified} (no boundary shift for position) \\
+    A23 & Second seed of the A-OKVQA lock-out (Qwen 3B) and Qwen 7B on A-OKVQA & B1, B2, C1, C2, C3 supported (lock-out at $d=0.99$ in both) \\
+    A24 & Interventions on the real Med-CMR shortcut: explicit length prior (LP), mismatched-image uniformity (MU), both (LP+MU) & criterion E1 \emph{falsified} for all three (image effect $\le+4.6$ points; LP+MU accuracy $79$--$80\%$) \\
+    A25 & More seeds on A-OKVQA (Qwen 7B, InternVL3-2B, Qwen 3B) & Dose-response and boundary shift supported; lock-out at $d=0.99$ supported for Qwen 3B and 7B, \emph{falsified} for InternVL3-2B ($+1.66$ points, boundary blur 2) \\
+    A26 & Second round on the real Med-CMR shortcut: gold-unlikelihood (UL), UL with the length prior, LP+MU with more seeds & UL met F1 and F2 in 3/3 seeds ($+11.6$ points against a plausible wrong image, accuracy $89.5$--$91.2\%$); LP+UL collapsed; LP+MU F1 in 4/5 seeds, F2 in none \\
+    A27 & Blur test of the UL models (evaluation only) & Graded rise with image sharpness in 3/3 seeds (rule C); blur 8 recovers $\ge80\%$ of the gap in 2/3 seeds: mostly coarse image identity; LP+MU and reference flat \\
+    \bottomrule
+  \end{tabular}%
+  }
+  \caption{Pre-registered tests and outcomes (supported / falsified / not evaluable), in the order of the analysis plan, not of the run time.}
+  \label{tab:amend}
+\end{table*}
+
+\section{Failed and non-evaluable tests}
+\label{app:fail}
+
+\paragraph{Base model readouts.}
+Reading the answer letter from a teacher-forced position gives chance-level accuracy for the unadapted Qwen3.5-9B (21.7\% with the image, 24.9\% black), because the readout encodes the adapter's trained answer format.
+A generated-answer replacement (A3) produced long descriptions that a 16-token limit cut off (2.7\% parsable); by its own rule no third readout was tried.
+Zero-shot Qwen2.5-VL-7B with a letter-only prompt scored 28.0\% (black 25.5\%, below the pre-set 60\% floor) and picked the shortest option only 26\% of the time, against 91\% for the adapter, an informative contrast but not an evaluable test.
+
+\paragraph{Length-equalising rewrites.}
+Both rewrites used Qwen2.5-VL-7B as a label-blind text-only editor under frozen quality gates.
+Whole-question rewriting passed 17.6\% of test questions (length violations in 78\% and altered negations in 41\% of all test questions).
+Per-option rewriting with a feedback loop and character and word bands accepted 48.6\% of options but only 5.2\% of questions; the 37 that passed were already balanced (the shortest-option rule scored 62\% on them against 91\% overall).
+In the data only 7\% of questions have a non-shortest correct option and the longest option is correct 28 times in 13{,}687, so a balanced subset cannot be selected; the cue can only be removed by editing, which needs a stronger editor or human edits.
+
+\paragraph{The no-veto test on PMC-VQA.}
+The pre-registered test of the no-veto property (Q4: at most 2\% of answers changed in the saturation band) could not be run because the band, a black-image margin of at least $0.99$, contains no question of the clean test set for any of the three fine-tuned models (and at most 11 of 3{,}000 for the zero-shot ones); we report the property as absent there and the answer changes under a blank image in the unsaturated strata instead (Supp.~F).
+
+\paragraph{A falsified hypothesis.}
+In the fine-tuning study (A9) the pre-registered claim that the image is worth at least $+5$ points on text-undecided questions was falsified for both public models (13 fixed against 17 broken for the 3B, 18 against 11 for the 7B), while the other three parts of that prediction held; we report it as such and do not re-run with another recipe.
+
+\paragraph{Validity gate.}
+The accuracy trigger of the development protocol (accuracy $\ge99\%$ or a Wilson lower bound above the test accuracy) fired for the pool, although pool and test margins did not differ from unseen validation questions; the margins are saturated (median 0.99997), which limits the resolution of that test.
+
+\section{Implementation details}
+\label{app:impl}
+
+\paragraph{Readout and arms.}
+Letter log-probabilities are read after the system's constant reasoning sentence and the end-of-thinking token (``direct''), softmaxed over the five letters; a second readout after the cue ``The correct option is'' behaves alike and is not used.
+Black image: a $224\times224$ zero image through the system's missing-image path.
+Random image: a fixed cyclic derangement within the sample.
+Nearest-neighbour image: top-1 PubMedCLIP cosine similarity (mean 0.94) within the same primary modality in the retrieval corpus, excluding the case and its same-source component.
+Donor images pass through the target case's modality route and preprocessing.
+
+\paragraph{Fine-tuning study.}
+Qwen2.5-VL-3B/7B-Instruct in bf16 with LoRA ($r=16$, $\alpha=32$, dropout 0.05, language-model linear layers only, fp32 adapter weights); AdamW (weight decay 0), learning rate $10^{-4}$ with 3\% warm-up and cosine decay, one epoch over 9{,}277 questions, per-device batch 1 with 16 accumulation steps, gradient clipping 1.0, seed 20261003; images downscaled to at most 448\,px; prompt with system message, image, the question with lettered options and the instruction to answer with a single letter; loss on the answer letter and the end-of-turn token only; training loss fell from 0.85 to 0.045 (3B, 27 min) and from 0.90 to 0.039 (7B, 22 min) on one H100.
+Evaluation reads the five letter log-probabilities at the position after the generation prompt; each model's $\tau$ is the 15th percentile of its margins on 700 unlabeled validation questions.
+
+\section{Reproducibility, data and licence}
+\label{app:repro}
+
+Software: PyTorch 2.7.1, Transformers 5.10.2, PEFT 0.19.1, bitsandbytes 0.49.2 on one NVIDIA H100; the baseline's FlashAttention request silently falls back to SDPA (we verified which backend loaded).
+The adapter, detector and base-model shards, and all 16 code files, are byte-identical (SHA-256) to those of the released container; the container holds no training manifest.
+Every Slurm job is logged with its ID, configuration, seed and output path; each amendment, script and result file has a recorded hash and timestamp, and result files were made read-only.
+Data are the MedReason~2026 release, which its organisers state is governed by CC BY-NC 4.0 (research use, with attribution)~\cite{medreason2026}; we verified that the staged images are byte-identical to the public Med-CMR files and never used the 400 reserved leaderboard cases.
+The later experiments (A15--A24) ran on NVIDIA A30 GPUs (24\,GB) because the H100 queue was saturated, with gradient checkpointing for the 7B and InternVL3 models, except parts H and P of A22 (A-OKVQA, Qwen 3B), which ran on NVIDIA RTX PRO 6000 Blackwell GPUs (96\,GB) with a separate PyTorch 2.7.1 environment for CUDA 12.8 (transformers 5.10.2 and peft 0.19.1 as elsewhere); A-OKVQA is used from its public release for research and no images are redistributed; OmniMedVQA (open-access subset, from the public release, images not redistributed) is licensed by its source datasets for research use.
+We will release code, the amendment documents with hashes, case-id lists of all splits and samples, and the per-question prediction files (no images).
+
+\section{Recipe-robustness variants}
+\label{app:variants}
+
+Table~\ref{tab:variants} lists all seven fine-tuned Med-CMR configurations on the same 3{,}000 unseen questions (A9, the four variants of A10, each changing one factor, and InternVL3-2B of A11).
+Each model's $\tau$ is the 15th percentile of its own margins on 700 unlabeled validation questions; three epochs drive the training loss to about 0.001 and $\tau$ to about 1, which shrinks the \LO{} stratum.
+
+\begin{table*}[h]
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{3pt}
+  \begin{tabular}{@{}lccrrcrc@{}}
+    \toprule
+    Configuration & \LO{} $n$ & \LO{} effect (pts, $p$) & \HI{} chg. & Gap & Short. (test) & Errors flagged & Acc. \\
+    \midrule
+    A9: 3B, 1 epoch, 448\,px         & 410 & $-1.0$ (0.58) & 0/2518 & $-0.1$ & 92.3\% & 131/135 & 95.5\% \\
+    A9: 7B, 1 epoch, 448\,px         & 386 & $+1.8$ (0.26) & 0/2503 & $+0.2$ & 91.7\% & 118/120 & 96.0\% \\
+    V1: 3B, 3 epochs                 & 152 & $+2.6$ (0.54) & 0/2499 & $+0.2$ & 91.8\% & 119/125 & 95.8\% \\
+    V2: 3B, 896\,px                  & 424 & $+1.7$ (0.23) & 0/2530 & $+0.2$ & 91.7\% & 123/126 & 95.8\% \\
+    V3: 3B, vision-tower LoRA        & 404 & $-0.7$ (0.68) & 0/2533 & $-0.1$ & 92.0\% & 135/138 & 95.4\% \\
+    V4: 7B, 3 epochs                 & 147 & $-4.1$ (0.31) & 0/2472 & $-0.3$ & 92.3\% & 121/123 & 95.9\% \\
+    A11: InternVL3-2B, 1 epoch      & 461 & $-0.2$ (1.0)  & 0/2514 & $0.0$  & 91.1\% & 153/154 & 94.9\% \\
+    \midrule
+    Released adapter (A8)$^\ddagger$ & 239 & $+12.1$ ($1.5\!\times\!10^{-5}$) & 0/2463 & $+1.1$ & 91\% & 52/52 & 98.3\% \\
+    \bottomrule
+  \end{tabular}
+  \caption{\textbf{All fine-tuned configurations.} The prediction of A10 (image effect on undecided questions below $+5$ points) held in every variant. ``Gap'' is accuracy with the true minus with a black image over all 3{,}000 questions; ``Short.'' the share of test predictions equal to the shortest option; ``Acc.'' fresh accuracy. $^\ddagger$ In-sample suspected.}
+  \label{tab:variants}
+\end{table*}
+
+\section{PMC-VQA study (A11)}
+\label{app:pmc}
+
+Data: PMC-VQA \cite{zhang2023pmcvqa}, the official clean test set (E1, 1{,}999 usable questions of 2{,}000; one row has duplicated options), 3{,}000 held-out train-file questions (E2), 700 unlabeled validation questions (setting each model's $\tau_m$), and 9{,}277 training questions; all four sets are disjoint by source article, and train articles occurring in the test set were removed. Counterfactual images: black, a random other-article image, and the PubMedCLIP nearest neighbour from another article (no modality restriction). The recipe is that of A9 (Sec.~4 of the main paper) with four letters; training took 27, 22 and 28 minutes (loss \textrm{0.73--0.91}\ to 0.54--0.56).
+Because margins are far from saturated here ($\tau_m\approx0.04$), the strata of Sec.~3 of the main paper do not isolate decisive text, and the paper's conclusions rest on the all-question gap, the undecided stratum, and the saturation band, which is empty.
+
+\begin{table*}[h]
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{3pt}
+  \begin{tabular}{@{}lccccccccccrr@{}}
+    \toprule
+    Model & Zero-shot & FT & FT black & Gap & \LO{} eff. & $\tau_m$ & \HI{} chg. & Short. & Err. ratio & AUROC & Flag./capt. & Gap E2 \\
+    \midrule
+    Qwen2.5-VL-3B & 50.2 & 51.8 & 38.1 & $+13.7$ & $+14.5$ & 0.039 & 30.6\% & 25.1\% & 1.50 & 0.72 & 13.3\% / 18.7\% & $+12.9$ \\
+    Qwen2.5-VL-7B & 52.2 & 54.1 & 39.2 & $+14.9$ & $+18.1$ & 0.042 & 30.0\% & 24.3\% & 1.76 & 0.76 & 14.2\% / 22.5\% & $+12.6$ \\
+    InternVL3-2B & 49.0 & 51.0 & 36.6 & $+14.4$ & $+18.7$ & 0.038 & 30.3\% & 27.4\% & 1.60 & 0.73 & 13.3\% / 19.7\% & $+9.8$ \\
+    \bottomrule
+  \end{tabular}
+  \caption{\textbf{PMC-VQA, clean test set (E1), fine-tuned systems.} Accuracy (\%) zero-shot and after fine-tuning (FT) with the true and with a black image; ``Gap'' and ``\LO{} eff.'' are accuracy with the true minus with a black image over all questions and in the least-confident stratum (points; all $p<10^{-5}$); ``\HI{} chg.'' the share of answers in the $m_b\ge\tau_m$ stratum that change under a black image; ``Short.'' the share of predictions equal to the unique shortest option (the correct option is it in 19.7\%); ``Err. ratio'' the error rate of flagged over unflagged questions and ``AUROC'' that of the margin for errors; ``Flag./capt.'' the flagged share of questions and the share of errors it contains; ``Gap E2'' the all-question gap on the 3{,}000 held-out questions.}
+  \label{tab:pmc}
+\end{table*}
+
+\section{Fine-tuning study on Med-CMR (A9)}
+\label{app:ft}
+
+Table~4 gives the full comparison of the released adapter and the two fine-tuned Qwen2.5-VL models on the same protocol (Sec.~4 of the main paper).
+
+\begin{table*}[h]
+  \centering
+  \small
+  \setlength{\tabcolsep}{8pt}
+  \begin{tabular}{@{}lccc@{}}
+    \toprule
+     & Adapter & FT 3B & FT 7B \\
+    \midrule
+    Test accuracy, before $\to$ after (\%) & -- $\to$ 96.1 & 24.5 $\to$ 95.4 & 27.7 $\to$ 95.4 \\
+    Test: shortest option, before $\to$ after (\%) & -- $\to$ 91 & 23 $\to$ 92 & 25 $\to$ 92 \\
+    Fresh accuracy (\%) & 98.3$^\ddagger$ & 95.5 & 96.0 \\
+    Fresh \#questions \HI{}/\MID{}/\LO{} & 2463/298/239 & 2518/72/410 & 2503/111/386 \\
+    \HI{}: answers changed by any wrong image & 0 & 0 & 0 \\
+    \LO{}: image effect, points ($p$) & $+12.1$ ($1.5\!\times\!10^{-5}$) & $-1.0$ (0.58) & $+1.8$ (0.26) \\
+    \LO{}: accuracy change with a random image, points & $-11.7$ & $+0.7$ & $-5.4$ \\
+    Headline gap, points & $+1.1$ & $-0.1$ & $+0.2$ \\
+    Errors in the flagged 16\% & 52/52 & 131/135 & 118/120 \\
+    \bottomrule
+  \end{tabular}
+  \caption{\textbf{Three systems, same protocol.} ``Before'' is zero-shot with the same readout (the adapter has no zero-shot state). Image effect = accuracy with the true minus with a black image; random-image row = accuracy with a random image minus with the true image. $^\ddagger$ In-sample suspected.}
+  \label{tab:train}
+\end{table*}
+
+\section{Error alarm and risk--coverage}
+\label{app:alarm}
+
+Table~5 and Fig.~1 give the pre-registered error alarm of the released adapter on the four labelled samples (summarised in Sec.~4 of the main paper).
+
+\begin{table}[h]
+  \centering
+  \small
+  \setlength{\tabcolsep}{3.0pt}
+  \begin{tabular}{@{}lrrrrr@{}}
+    \toprule
+    Sample & $n$ & Errors & Flagged & Caught & Answered right \\
+    \midrule
+    Fresh (A8)   & 3000 & 52 & 16.4\% & 52/52 & 2507/2507 \\
+    Dev          &  700 & 21 & 15.1\% & 21/21 &  594/594 \\
+    Pool         &  700 & 13 & 15.1\% & 13/13 &  594/594 \\
+    Test$^\dagger$ &  711 & 28 & 15.8\% & 28/28 &  599/599 \\
+    \bottomrule
+  \end{tabular}
+  \caption{\textbf{The error alarm at the pre-registered threshold.} Fresh, dev and pool are in-sample suspected for the adapter; $^\dagger$ exploratory.}
+  \label{tab:alarm}
+\end{table}
+
+\begin{figure*}[h]
+  \centering
+  \includegraphics[width=\textwidth]{fig/f4_risk_coverage.pdf}
+  \caption{\textbf{Risk--coverage.} Accuracy of the answered questions when the least confident ones are skipped (coverage from 100\% to 40\%), against random skipping.}
+  \label{fig:rc}
+\end{figure*}
+
+\section{Released adapter: where the image matters (A8)}
+\label{app:teaser}
+
+Figure~\ref{fig:where} shows the released adapter on 3{,}000 fresh questions that no earlier analysis had touched (in-sample suspected, see the main text).
+In the text-decisive stratum (82\% of the questions) no counterfactual image, whether black, random or a similar wrong one, changed any of 2{,}463 answers; in the text-undecided stratum (8\%) the image is worth $+12.1$ points (exact McNemar $p=2\times10^{-5}$); over all questions the gap is $1.1$ points.
+
+\begin{figure*}[h]
+  \centering
+  \includegraphics[width=\textwidth]{fig/f1_where_image_matters.pdf}
+  \caption{\textbf{Where the image matters, for the released adapter.} (a)~Accuracy with the true and with a black image by text-saturation stratum (\HI{}: margin $\ge0.995$). (b)~Share of questions per stratum (top) and share of all prediction changes without the image (bottom): 94\% of them occur in the 8\% of questions where the text is undecided.}
+  \label{fig:where}
+\end{figure*}
+
+\section{Length intervention, alarm combiner and saturation-aware training (A12)}
+\label{app:a12}
+
+\paragraph{Filler intervention.}
+Every option is extended by neutral adverbs (``often'', ``typically'', ``especially'', \dots) so that the five final lengths are exactly $s_{\max}+4j$ characters; in \emph{pres} the original length order is kept, in \emph{rand} the length rank of each option is a random permutation (the correct option is the shortest in 20\% of questions).
+Table~\ref{tab:l1} shows the evaluation-time test on the A9 models and Table~\ref{tab:l2} the models trained on \emph{rand} options.
+The filler alone costs 6--11 points (V failed, so L1 is not evaluable), and under \emph{rand} the models follow the originally shortest option, not the padded one.
+
+\begin{table}[h]
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{2.5pt}
+  \resizebox{\columnwidth}{!}{%
+  \begin{tabular}{@{}llcccc@{}}
+    \toprule
+    Model & Condition & Test acc. & Fresh acc. & = padded shortest & = original shortest \\
+    \midrule
+    Qwen 3B & orig & 95.4 & 95.5 & 91.0 & 91.0 \\
+            & pres & 85.4 & 84.2 & 83.7 & 82.6 \\
+            & rand & 80.5 & 77.1 & 24.5 & 77.1 \\
+    Qwen 7B & orig & 95.4 & 96.0 & 90.6 & 90.6 \\
+            & pres & 89.2 & 89.9 & 87.8 & 86.2 \\
+            & rand & 85.2 & 83.8 & 24.2 & 81.6 \\
+    \bottomrule
+  \end{tabular}%
+  }
+  \caption{\textbf{Evaluation-time intervention (L1).} Accuracy (\%) of the A9 fine-tuned models on the test and fresh questions with original options, with filler that preserves the length order (pres), and with randomised length ranks (rand); share of test predictions equal to the padded and to the originally shortest option.}
+  \label{tab:l1}
+\end{table}
+
+\begin{table}[h]
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{2.5pt}
+  \resizebox{\columnwidth}{!}{%
+  \begin{tabular}{@{}lcccccc@{}}
+    \toprule
+    Model & Acc. & = pad.\ sh. & = orig.\ sh. & $m_b\!\ge\!.99$ & Gap (p) & \LO{} eff. \\
+    \midrule
+    Qwen 3B & 95.1 & 18.4 & 90.7 & 77.7 & $+0.4$ (0.058) & $+2.9$ (n 415) \\
+    Qwen 7B & 95.7 & 18.7 & 90.9 & 78.6 & $+0.2$ (0.30) & $+1.8$ (n 395) \\
+    \bottomrule
+  \end{tabular}%
+  }
+  \caption{\textbf{Training on randomised length ranks (L2).} Fresh accuracy (\%), share of test predictions equal to the padded-shortest and to the originally shortest option, share of fresh questions with a black-image margin $\ge0.99$, all-question image gap and effect in the least-confident stratum.}
+  \label{tab:l2}
+\end{table}
+
+\paragraph{Counterfactual-evidence alarm (M1).}
+A logistic combiner (C=1) of eight features (true and black margins, JS divergence between true- and black-image distributions, agreement with and divergence from the random- and nearest-neighbour-image predictions, top-1 probability) is fitted on PMC-VQA E2 and tested on E1, and cross-fitted by case-id parity on Med-CMR.
+AUROC against the margin alone: PMC-VQA $0.724$ vs $0.716$ (Qwen 3B), $0.760$ vs $0.755$ (7B), $0.725$ vs $0.727$ (InternVL); Med-CMR $0.950$ vs $0.965$, $0.966$ vs $0.968$, $0.962$ vs $0.969$.
+The share of errors in the 15\% highest scores changes by $+0.1$, $0.0$, $-0.9$ points (PMC-VQA) and $-1.5$, $0.0$, $-0.7$ (Med-CMR).
+
+\paragraph{Saturation-aware training (M2).}
+Two text-only bias models (Qwen 3B, black image, A9 recipe, each trained on one half of the training questions) score the other half; the 14.5\% of training questions with a text-only margin below 0.90 get loss weight 1, the others 0.25.
+On the 410 fresh questions that are undecided for the A9 3B model the image effect is $+1.46$ points (17 fixed, 11 broken, $p=0.34$) against $-0.98$ for A9, accuracy with the image $69.0\%$ against $68.5\%$; overall fresh accuracy $95.57\%$ against $95.50\%$; shortest-option share 90.9\%.
+
+
+\section{Planting a length cue in PMC-VQA (A13)}
+\label{app:a13}
+
+Neutral filler is added to all four options so that the final lengths are $s_{\max}+4j$ characters; the correct option receives the shortest length with probability 0.92 (realised: 91.8\% on E1) and a random other rank otherwise.
+The three systems are fine-tuned with the A11 recipe on the planted training questions and evaluated with true and black images on planted E1, planted E2 and original E1 (Table~\ref{tab:a13}).
+
+\begin{table}[h]
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{2.5pt}
+  \resizebox{\columnwidth}{!}{%
+  \begin{tabular}{@{}lccc@{}}
+    \toprule
+     & Qwen 3B & Qwen 7B & InternVL 2B \\
+    \midrule
+    A11 (original options): E1 accuracy / gap & 51.8 / $+13.7$ & 54.1 / $+14.9$ & 51.0 / $+14.4$ \\
+    Planted E1: accuracy (black) & 91.7 (91.7) & 91.8 (91.9) & 91.8 (91.6) \\
+    Planted E1: gap ($p$) & $+0.05$ (1.0) & $-0.10$ (0.63) & $+0.20$ (0.13) \\
+    Planted E1: prediction = shortest & 99.7 & 99.8 & 99.6 \\
+    Planted E1: black margin $\ge0.99$ / $\ge0.5$ & 0 / 99.3 & 0 / 99.8 & 0 / 98.9 \\
+    Planted E2: gap & $-0.13$ & $-0.10$ & $0.00$ \\
+    Original E1: accuracy (black) & 38.2 (27.5) & 38.8 (27.1) & 28.6 (24.6) \\
+    Original E1: gap & $+10.7$ & $+11.7$ & $+3.95$ \\
+    \bottomrule
+  \end{tabular}%
+  }
+  \caption{\textbf{Planted length cue on PMC-VQA (A13).} Percentages unless stated; ``gap'' is accuracy with the true minus with a black image in points. Predictions I1, I3 and I4 held for all three systems; I2 (at least 30\% of questions with a black-image margin $\ge0.99$) did not.}
+  \label{tab:a13}
+\end{table}
+
+
+\section{Retrieval of similar cases (A1)}
+\label{app:retr}
+
+The adapter was built to be improved by retrieval, so we tested it: for each of the 711 test MCQs we retrieved the three most similar training cases in the same modality (PubMedCLIP image embeddings, corpus without same-source cases) and put their questions and verified answers into the prompt.
+Accuracy fell from 683 to 678 correct (net $-5$, $p=0.30$); three random same-modality neighbours gave 680 ($-3$), so the loss is a prompt-format effect, not retrieval; retrieving from the full pool with same-source cases (the index finds the partner in 36 of 47 cases) gave 679 ($-4$); applying retrieval only to the low-margin cases gave 678 ($-5$); and with the image blacked out retrieval did not substitute for it (673 against 677).
+All five pre-registered predictions held.
+This agrees with a related preprint reporting that changing the number of in-prompt examples moves accuracy by at most one case once its adapter is fixed~\cite{kirscher2026optionaware}; we tested one encoder, $k=3$, one prompt and one model trained on this distribution, so we do not claim that retrieval cannot help any model.
+
+\section{Fresh-data test of the tie-breaker structure (A8)}
+\label{app:a8}
+
+\begin{table}[h]
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{2.4pt}
+  \begin{tabular}{@{}lrrrrrr@{}}
+    \toprule
+     & & \multicolumn{2}{c}{Accuracy (\%)} & Fix/ & \multicolumn{2}{c}{Changed, \#} \\
+    \cmidrule(lr){3-4}\cmidrule(l){6-7}
+    Stratum & $n$ & true & black & break & black & wrong img \\
+    \midrule
+    \HI{} (text decides) & 2463 & 100.0 & 100.0 & 0/0 & 0 & 0 \\
+    \MID{}               &  298 &  99.3 &  98.3 & 3/0 & 3 & 5 \\
+    \LO{} (undecided)    &  239 &  79.1 &  67.0 & 37/8 & 49 & 55 \\
+    \midrule
+    All                  & 3000 &  98.3 &  97.2 & 40/8 & 52 & 60 \\
+    \bottomrule
+  \end{tabular}
+  \caption{\textbf{Fresh-data test (A8).} Fix/break: questions the true image gets right and the black image wrong, and the reverse. ``Wrong img'': prediction changes with a similar but wrong image.}
+  \label{tab:a8}
+\end{table}
+
+\section{Option-length dose--response}
+\label{app:dose}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.6\columnwidth]{fig/f2_length_dose_response.pdf}
+  \caption{\textbf{Accuracy falls as the length cue weakens} (711 test MCQs, exploratory). Accuracy of the adapter with the true and the black image, binned by the length of the correct option over the mean length of the wrong options.}
+  \label{fig:dose}
+\end{figure}
+
+\section{Seeds and threshold sensitivity (A14)}
+\label{app:a14}
+
+\begin{table}[h]
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{2.2pt}
+  \begin{tabular}{@{}llccccc@{}}
+    \toprule
+    Benchmark & Seed & Gap & \LO{} effect & Shortest & \HI{} chg. & Caught \\
+    \midrule
+    Med-CMR & 0 & $-0.13$ & $-0.98$ (0.58) & 92.3 & 0/2518 & 131/135 \\
+            & 1 & $-0.03$ & $-0.24$ (1.0)  & 92.1 & 0/2528 & 134/137 \\
+            & 2 & $+0.13$ & $+1.06$ (0.52) & 92.0 & 0/2510 & 131/135 \\
+    PMC-VQA & 0 & $+13.7$ & $+14.5$ & 25.1 & -- & 18.7\% \\
+            & 1 & $+15.3$ & $+16.9$ & 24.4 & -- & 19.7\% \\
+            & 2 & $+14.1$ & $+18.1$ & 24.8 & -- & 22.0\% \\
+    \bottomrule
+  \end{tabular}
+  \caption{\textbf{Three seeds of the Qwen2.5-VL-3B recipe on each benchmark.} Gap: accuracy with the true minus with a black image over all questions (points); \LO{} effect in the least-confident stratum (points, McNemar $p$ on Med-CMR; all $p<10^{-3}$ on PMC-VQA); shortest: share of test (Med-CMR) or E1 (PMC-VQA) predictions equal to the shortest option; \HI{} chg.: text-decisive answers changed by a black image; caught: errors in the flagged questions. Means (sd): Med-CMR gap $-0.01$ (0.13), \LO{} effect $-0.05$ (1.03); PMC-VQA gap $14.3$ (0.83), \LO{} effect $16.5$ (1.8).}
+  \label{tab:seeds-app}
+\end{table}
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=0.85\textwidth]{fig/f6_threshold.pdf}
+  \caption{\textbf{Threshold sensitivity on Med-CMR.} (a)~Image effect (true minus black accuracy) in the questions whose black-image margin is below a cut-off (numbers: questions for the released adapter). (b)~Share of answers changed by a black image among the questions with a margin above a cut-off. The fine-tuned models stay below the $+5$-point line at every cut-off; the released adapter's effect grows as the cut-off tightens; no answer changes at cut-offs of 0.99 and above.}
+  \label{fig:thr}
+\end{figure*}
+
+\section{Competition score and visual-strength factorial (A15)}
+\label{app:a15}
+
+\paragraph{Competition score.}
+For each question, $M_T$ is the log-odds margin of the black-image answer $a^*$; $\Delta(I')$ is how far an image $I'$ moves the log-odds against $a^*$; $\Delta_{\rm wrong}$ is the larger of $\Delta$ for the random and the nearest-neighbour image; the competition ratio is $R=\Delta_{\rm wrong}/(M_T+0.1)$.
+These wrong-image quantities are used to predict whether the \emph{true} image overrides $a^*$ (a prediction that cannot be true by construction).
+Table~\ref{tab:a15c} gives the AUROC of text saturation, of $R$ and of the deficit $\Delta_{\rm wrong}-M_T$ (exploratory), and the leave-one-system-out log-loss.
+Pre-registered C1 (the ratio beats the best text score by 0.02 in at least 70\% of the evaluable systems) and C2 (lower leave-one-system-out log-loss in at least 8 of 10 systems) both failed.
+
+\begin{table}[h]
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{2.2pt}
+  \resizebox{\columnwidth}{!}{%
+  \begin{tabular}{@{}llrrrrrr@{}}
+    \toprule
+    Data & System & Overr. & Sat. & Ratio & Deficit & LL text & LL add. \\
+    \midrule
+    Med-CMR & Adapter & 52 & .978 & .943 & .985 & .052 & .047 \\
+            & Qwen 3B & 40 & .987 & .942 & .991 & .034 & .028 \\
+            & Qwen 7B & 33 & .983 & .948 & .994 & .032 & .025 \\
+            & InternVL & 44 & .983 & .904 & .993 & .040 & .032 \\
+    PMC-VQA & Qwen 3B & 772 & .697 & .767 & .790 & .620 & .559 \\
+            & Qwen 7B & 743 & .692 & .732 & .753 & .606 & .573 \\
+            & InternVL & 749 & .683 & .788 & .810 & .622 & .541 \\
+    Planted & 3 systems & 4--10 & \multicolumn{5}{c}{not evaluable (fewer than 40 overrides)} \\
+    \bottomrule
+  \end{tabular}%
+  }
+  \caption{\textbf{Predicting visual overrides (A15).} Overr.: questions whose answer under the true image differs from the black-image answer. AUROC of text saturation (Sat.), of the pre-registered competition ratio (Ratio) and of the exploratory deficit; LL: leave-one-system-out log-loss of a logistic model on the text margin (text) and on the text margin plus wrong-image evidence (add.). The ratio is below saturation on Med-CMR (C1 and C2 failed); the additive model has the lower log-loss in 9 of 10 systems.}
+  \label{tab:a15c}
+\end{table}
+
+\paragraph{Visual-strength factorial.}
+Table~\ref{tab:a15f} gives accuracy as the true image is replaced by a black image, a blurred image (radius 24 and 8\,px) and the intact image (A30 GPUs, evaluation only).
+
+\begin{table}[h]
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{2.2pt}
+  \begin{tabular}{@{}llrrrr@{}}
+    \toprule
+    Text condition & Family & Black & Blur 24 & Blur 8 & True \\
+    \midrule
+    PMC-VQA & Qwen 3B & 38.4 & 39.0 & 40.5 & 51.5 \\
+            & Qwen 7B & 39.9 & 40.5 & 42.2 & 54.2 \\
+            & InternVL & 36.8 & 36.4 & 39.3 & 50.9 \\
+    Planted cue & Qwen 3B & 91.6 & 91.7 & 91.6 & 91.7 \\
+            & Qwen 7B & 91.9 & 91.9 & 91.8 & 91.8 \\
+            & InternVL & 91.6 & 91.7 & 91.7 & 91.7 \\
+    Med-CMR & Qwen 3B & 95.6 & 95.6 & 95.6 & 95.5 \\
+            & Qwen 7B & 95.8 & 95.7 & 95.8 & 96.0 \\
+            & InternVL & 94.9 & 95.0 & 95.0 & 95.0 \\
+    \bottomrule
+  \end{tabular}
+  \caption{\textbf{Accuracy (\%) by visual evidence strength and text condition (A15).} The image benefit grows with visual strength only on PMC-VQA; with a locked text (planted cue, Med-CMR) it is within $\pm0.3$ points at every strength. Predictions F1--F3 held for all three families.}
+  \label{tab:a15f}
+\end{table}

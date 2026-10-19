@@ -1,0 +1,41 @@
+\section{Is the Pattern Learned From the Benchmark?}
+\label{sec:training}
+
+\paragraph{Design.}
+The adapter's training data and recipe are unknown, and its pool cases are in-sample suspected, so on its own it cannot tell whether training creates the pattern.
+We therefore fine-tune two public models, Qwen2.5-VL-3B and -7B~\cite{bai2025qwen25vl}, on the benchmark's training split with one fixed recipe (LoRA~\cite{hu2022lora} $r{=}16$ on the language layers, one epoch, learning rate $10^{-4}$, batch 16, images at most 448\,px, loss on the answer letter only; Supp.~C), using 9{,}277 MCQs that are disjoint from the test, the fresh and the validation samples and from all same-source cases.
+Each model is read out in the same way before and after training, with its own $\tau$ from unlabeled validation margins, and evaluated on the same 3{,}000 fresh questions, which \emph{these models never saw}.
+Predictions G1--G4 (A9) were fixed beforehand: training creates the shortest-option habit (G1); the tie-breaker structure of Sec.~\ref{sec:image} replicates (G3, with the image worth at least $+5$ points in \LO{}); and the error alarm replicates (G4).
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{fig/f3_training_study.pdf}
+  \caption{\textbf{Controlled fine-tuning study.} (a)~Share of test predictions equal to the shortest option before and after fine-tuning on the benchmark (dotted line: chance). (b)~Image effect (accuracy with the true minus with a black image) by text-saturation stratum on 3{,}000 fresh questions. The three systems have the same headline gap ($+1.1$, $-0.1$, $+0.2$ points) but differ where the text is undecided. The released adapter's data are in-sample suspected.}
+  \label{fig:train}
+\end{figure*}
+
+\paragraph{Training creates the habit (G1, supported).}
+Zero-shot, both models are at chance under our readout (24.5\% and 27.7\% on test) and pick the shortest option 23\% and 25\% of the time; after one epoch they reach 95.4\% on test and pick it 92\% of the time, like the released adapter (91\%; Fig.~\ref{fig:train}a).
+
+\paragraph{Text saturation and no veto replicate (G3: C1, C3, C4).}
+83--84\% of fresh questions are text-decisive for each model, and in them no counterfactual image changes any prediction (0 of 2{,}518 and 0 of 2{,}503, for black, random and plausible wrong images), all changes without the image lie outside \HI{}, and accuracy is 99.9\% in every arm.
+
+\paragraph{The image's benefit does not replicate (G3: C2 falsified).}
+On the text-undecided questions the image is worth $-1.0$ points ($13$ fixed, $17$ broken, $p=0.58$) for the 3B and $+1.8$ points ($18$ against $11$, $p=0.26$) for the 7B, far below the $+5$ points we had pre-registered and the $+12.1$ of the released adapter.
+The 7B is not blind to image content: a random image costs it $5.4$ points in \LO{} (24 against 3, $p=5\times10^{-5}$), yet the true image helps it little.
+The headline gaps of the three systems are indistinguishable, so the stratified measure exposes a difference that the usual one hides (Fig.~\ref{fig:train}b).
+
+\paragraph{The weak benefit is not an artefact of one recipe (A10).}
+Four pre-registered single-factor variants (3B with three epochs, with images up to 896\,px, and with LoRA also on the vision tower; 7B with three epochs; Supp.~E) all held the prediction: the image's effect on undecided questions is $+2.6$, $+1.7$, $-0.7$ and $-4.1$ points (none significant, $p\ge0.23$), no answer changes in the text-decisive stratum, the habit stays at 92\% and the alarm captures 95--98\% of the errors.
+Across seven fine-tuned configurations the image is worth between $-4.1$ and $+2.6$ points where the text is undecided, against $+12.1$ for the released adapter.
+
+\paragraph{Seeds and thresholds (A14).}
+Two further seeds of the Qwen 3B reproduce the Med-CMR result (R1--R4 hold; the image effect on undecided questions is $-1.0$, $-0.2$ and $+1.1$ points, 0 of about 2{,}500 text-decisive answers change, the habit stays at 92\% and the alarm catches 97\% of the errors) and the PMC-VQA result of Sec.~\ref{sec:pmc} (all-question gap $+13.7$, $+15.3$, $+14.1$; habit 24--25\%).
+A sweep of the cut-offs leaves the conclusions unchanged: at text-decisive cut-offs of 0.9 and above at most 3 of 2{,}761 answers change under any counterfactual image, the fine-tuned models' effect in the undecided stratum stays below $+5$ points at every cut-off while the released adapter's grows from $+12.1$ to $+20.2$ as the cut-off tightens (Supp.~O).
+
+\paragraph{The error alarm replicates (G4, supported).}
+With each model's own threshold, the flagged 16.4\% contain 97.0\% and 98.3\% of the errors.
+
+\paragraph{What we can and cannot conclude.}
+Benchmark training yields models that read first, with the same saturation and no-veto property; whether they also use the image where the text is undecided depends on the model.
+We do not know why the adapter does: its fresh cases are in-sample suspected, so part of its $+12.1$ could be memorised image--answer pairs (on the unsuspected test slice the same stratum gives 73.0\% against 61.9\% without the image, $n{=}63$, $p=0.12$, compatible but underpowered), or its larger model and unknown recipe may use vision better.

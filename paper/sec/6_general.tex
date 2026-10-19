@@ -1,0 +1,36 @@
+\section{Does It Generalise?}
+\label{sec:general}
+
+Besides the non-medical replication of the intervention (Sec.~\ref{sec:dose}), we test further seeds, model sizes, held-out models and a third medical benchmark.
+
+\paragraph{Seeds, sizes and thresholds (A14, A16).}
+Two further seeds of Qwen2.5-VL-3B and two of Qwen2.5-VL-7B reproduce the Med-CMR result (the image effect on undecided questions is $-1.0$, $-0.2$, $+1.1$ points for the 3B and $+2.5$, $-0.3$ for the 7B, none significant; no text-decisive answer changes; the habit stays at 92\%) and the PMC-VQA result (gaps $+13.7$, $+15.3$, $+14.1$ and $+14.5$, $+15.5$).
+A sweep of the cut-offs leaves the conclusions unchanged: at text-decisive cut-offs of 0.9 and above at most 3 of 2{,}761 answers change under any counterfactual image, and the fine-tuned models' effect in the undecided stratum stays below $+5$ points at every cut-off (Supp.~O).
+
+\paragraph{A prediction for held-out models (A19).}
+Before training InternVL3-2B or Qwen2.5-VL-7B on planted shortcuts, we fixed the prediction from the Qwen-3B curve: an image benefit of $13.5$, $3.4$ and $0.1$ points at $d=0.25$, $0.70$ and $0.92$ (tolerance $\pm4$ points), a veto boundary at $d=0.25$ and none at $d=0.92$, and a monotone decrease.
+Both models pass all three rules in both seeds, the second of which was pre-registered before it ran (A22; Table~\ref{tab:heldout}): the largest deviation from the prediction is $0.65$ points for InternVL3-2B and $1.96$ for Qwen-7B in the first seed and $0.60$ and $1.81$ in the second, the veto boundary exists at $d=0.25$ (blur 8 for both) and not at $d=0.92$, and the benefit falls monotonically.
+At $d=0.92$ both pick the shortest option in 99\% of cases and fall to $31$--$37\%$ on the original, unplanted questions.
+The scope is two seeds per model, one benchmark and one shortcut.
+
+\begin{table}[t]
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{3pt}
+  \begin{tabular}{@{}lccc@{}}
+    \toprule
+    Image benefit $g$ (pts) & $d=0.25$ & $d=0.70$ & $d=0.92$ \\
+    \midrule
+    Prediction (Qwen-3B curve) & 13.5 & 3.4 & 0.1 \\
+    InternVL3-2B, seeds 1/2 & 13.7 / 13.1 & 2.8 / 2.8 & $-0.1$ / 0.3 \\
+    Qwen2.5-VL-7B, seeds 1/2 & 15.5 / 15.3 & 4.6 / 4.1 & 0.1 / 0.3 \\
+    \bottomrule
+  \end{tabular}
+  \caption{\textbf{Held-out prediction (A19).} Image benefit of the intact image on PMC-VQA with a planted length cue of strength $d$, two seeds per model (seeds 1/2); the prediction, the three-seed Qwen-3B curve of Sec.~\ref{sec:dose}, was written down before these runs.}
+  \label{tab:heldout}
+\end{table}
+
+\paragraph{A third benchmark (A16).}
+OmniMedVQA is also free of a length cue (22.2\% of our 2{,}000 test questions).
+With the same recipe the three families reach 98.7--98.9\% accuracy with image benefits of $+5.7$, $+7.1$ and $+16.2$ points (Qwen 3B, Qwen 7B, InternVL3-2B), a monotone blur ladder and no habit; 1{,}061--1{,}323 of the questions are text-confident and at most 1.8\% of their answers change under a black image (Supp.~S).
+One pre-registered prediction failed: the image gap is at least $+5$ points if and only if the median black-image log-odds margin is below $1.5$, but the medians are $5.9$--$8.3$ with gaps of $+5.7$ to $+16.2$; 34--47\% of the questions are not text-decisive and carry a large benefit while the text-confident majority never changes, so a median is a poor summary.

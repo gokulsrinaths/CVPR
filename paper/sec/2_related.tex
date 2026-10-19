@@ -1,0 +1,19 @@
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{Shortcuts and language priors.}
+Image-blind answers have been studied since VQA~v2 was built to balance them~\cite{goyal2017making}; prior-robust training~\cite{agrawal2018dont}, shortcut benchmarks~\cite{si2022language} and the general account of shortcut learning~\cite{geirhos2020shortcut} followed; for multiple choice, hypothesis-only and option-only baselines~\cite{poliak2018hypothesis,gururangan2018annotation} and easy-option bias~\cite{zhang2025easyoption} show that options leak the answer.
+Debiasing trains against a known bias, by ensembling with a biased expert~\cite{clark2019dont} or re-weighting examples~\cite{cadene2019rubi}; we use the former as a remedy whose effect we can attribute in a dose-controlled setting.
+
+\paragraph{Shortcuts in medical VQA.}
+Classic and large medical VQA sets~\cite{lau2018vqarad,liu2021slake,he2020pathvqa,zhang2023pmcvqa,hu2024omnimedvqa} are widely used, and recent audits question what they measure: MedQA-MM finds length-gap and wording cues in six medical MCQ datasets~\cite{wang2026medqamm}, a Polish board-exam benchmark finds models draw more from the text than the image~\cite{pokrywka2026polish}, SurgCheck shows task-dependent reliance on linguistic shortcuts~\cite{shin2026surgcheck}, and a counterfactual grounding study reports that image substitution costs at most 6.5 points on medical benchmarks~\cite{zafar2026coral}.
+These works ask \emph{whether} models use the image on average; we ask under which shortcut and image strength, and we intervene.
+
+\paragraph{Training on benchmarks.}
+Training on benchmark-related data can raise scores without the ability: leaked evaluation data dramatically boosts results~\cite{zhou2023cheater}, some model families score up to 8\% lower on a fresh matched arithmetic set~\cite{zhang2024gsm1k}, multimodal models answer image-dependent questions without the image, which suggests memorized samples~\cite{chen2024mmstar}, and a 2026 preprint audit of medical VLM benchmarks finds overlap signals that manual review did not confirm as duplicates~\cite{xu2026medvlmaudit}.
+We study the counterpart that needs no leakage: what a benchmark's own training split teaches.
+
+\paragraph{Concurrent work and sample-level dependence.}
+MIRAGE~\cite{asadi2026mirage} shows that frontier models describe and answer for images never provided and that a text-only model tops a chest X-ray VQA benchmark, .
+Visual Information Gain~\cite{lee2026vig} scores how much visual input reduces prediction uncertainty for each training sample, a second preprint analyses how predictions respond to losing fine-grained visual evidence~\cite{lan2026seeing}, counterfactual probing with blank and mismatched images~\cite{zhu2026ask4vg} and designs crossing image presence with text integrity~\cite{senoglu2026sure} also measure image dependence, and audits of vision-indispensable subsets use multimodal gain and leakage~\cite{chen2024mmstar}.
+We add a text-only blind ceiling and headroom per benchmark, shortcuts planted at graded strength (the cause and its dose), the released challenge system's accuracy where cleaning matters, an audit of its faithfulness judge, and an intervention with its price.

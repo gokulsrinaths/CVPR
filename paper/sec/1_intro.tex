@@ -1,0 +1,30 @@
+\section{Introduction}
+\label{sec:intro}
+
+Do vision-language models look at the image?
+Recent audits of medical VQA say mostly not: tuned models lose few points when the image is blanked or swapped~\cite{zafar2026coral}, models ``derive more useful information from the question text than from the image''~\cite{pokrywka2026polish}, and the answer options alone carry exploitable cues~\cite{wang2026medqamm}, echoing the language priors and annotation artifacts of general VQA and language understanding~\cite{goyal2017making,agrawal2018dont,si2022language,gururangan2018annotation,poliak2018hypothesis}.
+These findings are usually summarised by one number, the average accuracy drop without the image, and read as ``the model ignores the image''.
+That number answers the wrong question.
+The question that matters is conditional and causal: \emph{how strong must a nonvisual shortcut be before visual evidence can no longer change the decision, and how strong must the visual evidence be to overcome a given shortcut?}
+
+We make this measurable.
+A question's \emph{text saturation} is the model's own confidence when the image is replaced by a black one; questions are stratified into text-decisive and text-undecided by a threshold fixed on unlabeled data, and counterfactual images (black, random, a plausible wrong one) test whether the answer can change.
+In a released top-3 MedReason~2026 system and in public models that we fine-tune on the same benchmark (Med-CMR), 82--84\% of questions are text-decisive, and on them no counterfactual image changes any of about 2{,}500 answers per system, although the headline true-vs-black gaps of the systems are within 1.3 points.
+The cause is visible in the data: the correct option is the shortest in 91.9\% of 13{,}687 questions, and fine-tuning installs that habit.
+The same models and recipe on a benchmark without the cue (PMC-VQA) are never text-decisive and lose 14 points without the image.
+
+This contrast is observational.
+Our main experiment is an intervention (Sec.~\ref{sec:dose}).
+We plant a neutral shortcut in PMC-VQA at six strengths (25--92\% of questions) and weaken the image on a six-level ladder.
+The benefit of the image falls monotonically from $+13.5$ to $+0.1$ points (three seeds; $\rho=-0.96$), and the weakest image that still helps, the \emph{visual veto boundary}, moves from a blur of radius 8 to beyond the intact image: visual evidence helps while the decision stays contestable, and ceases to affect decisions once the shortcut locks them.
+A second shortcut that changes no text (the answer position) gives the same pattern.
+A prediction fixed from the Qwen-3B curve before any held-out run transfers to InternVL3-2B and Qwen2.5-VL-7B (benefit within 2 points of the prediction at every strength, boundary and monotonicity as predicted, in two seeds; Sec.~\ref{sec:general}).
+On natural photographs (A-OKVQA) the dose-response and the boundary shift replicate, but the image is still useful at 92\% and the decision locks only at 99\% for Qwen-3B (two seeds) and Qwen-7B (against 85--92\% on PMC-VQA), and three pre-registered criteria failed (cue uptake, strong lock-out and the boundary shift of the position shortcut): the lock-out strength depends on the benchmark (Sec.~\ref{sec:dose}).
+Keeping a model from using the shortcut during training (product-of-experts debiasing with a text-only expert) restores visual control in this controlled setting, but five attempts on the real Med-CMR shortcut fail (Sec.~\ref{sec:remedy}), and the models ignore the image even where the cue points away.
+We also report what did not work, among them a competition score that does not beat text saturation, three attempts to remove the cue from Med-CMR, and a pre-registered rule for the image gap that failed on a third benchmark (OmniMedVQA).
+
+\paragraph{Contributions.}
+(i)~A conditional evaluation protocol: text saturation, counterfactual images (including a plausible wrong one) and a visual-strength ladder, which separates systems with the same headline gap and defines a per-condition visual veto boundary.
+(ii)~A controlled shortcut dose-response: planted shortcuts of two kinds progressively suppress visual control in a medical and in a natural-image benchmark; for the length shortcut the veto boundary shifts and the decision locks at a strength that differs between the two benchmarks, whereas the boundary shift of the position shortcut is established on the medical benchmark only; sufficiency interpretation, no claim of necessity.
+(iii)~Generalisation tests that include failures: three model families and four benchmarks, seeds and thresholds, a held-out prediction written down before the runs (two seeds), and hash-chained pre-registered amendments (A0--A24).
+(iv)~A negative result: a standard remedy (product-of-experts debiasing) restores visual control when the shortcut is planted but fails on the real shortcut in five attempts; we do not claim it as a method.

@@ -1,0 +1,23 @@
+\section{Discussion}
+\label{sec:disc}
+
+\paragraph{What the evidence supports.}
+A conventional ablation would call the three Med-CMR systems equally image-blind; the stratified measure separates them, and the intervention shows why a headline average cannot be trusted as a statement about vision: image use depends on the strength of the nonvisual shortcut and on the strength of the visual evidence.
+Where the shortcut is weak the image can change the decision and its benefit grows with its strength; where it is strong enough the decision is locked.
+We recommend reporting accuracy with and without the image on the text-undecided stratum, together with its size and, for benchmark builders, the share of text-decisive questions.
+
+\paragraph{Limits.}
+\emph{Sufficiency.} The causal claim is for a planted shortcut, not for Med-CMR's own cue (three attempts to remove it failed, Supp.~B and J), and the dose-response is established on two benchmarks (PMC-VQA with three models, A-OKVQA with two); a prediction written down before the runs held for InternVL3-2B and Qwen2.5-VL-7B in two seeds, but the strength at which the decision locks differs between the benchmarks ($d=0.85$ against $0.99$ for Qwen-3B), the lock-out on A-OKVQA was observed for two seeds of Qwen-3B and for Qwen-7B only, and larger models, other shortcuts and other tasks are untested.
+\emph{Not a law.} The rule for the image gap that we fitted on three conditions failed on OmniMedVQA, where a median summary misses the stratified structure.
+\emph{Remedy.} Shortcut-rescue needs a text-only expert, lowers cue-present accuracy and failed on Med-CMR in five attempts (a collapse to chance, an unchanged habit and three further methods that missed a pre-registered criterion); it is a validated remedy for the controlled setting only.
+\emph{Real shortcut.} Where the cue points away (235 of 3{,}000 questions) the fine-tuned models still gain nothing from the image, so the cue is not shown to be the only reason for Med-CMR's image-blindness (Supp.~X).
+\emph{Method.} No patient identifiers exist (case-disjointness and near-duplicate filtering only; thresholds were set by an AI assistant's review of montages); the released adapter's training membership is unknown (pool results are labelled in-sample suspected); the analyses were implemented with an AI coding assistant under the hashed pre-registration; later runs used A30 and RTX PRO 6000 GPUs.
+\emph{Small counts} bound some intervals (13--135 errors; 150--460 undecided questions).
+
+\paragraph{Ethics and broader impact.}
+We use MedReason~2026, PMC-VQA, the open-access subset of OmniMedVQA and A-OKVQA for research and redistribute no images; nothing here supports clinical use, since high benchmark accuracy does not show that a model sees the image.
+
+\paragraph{Conclusion.}
+``VLMs ignore the image'' is too coarse.
+A nonvisual shortcut progressively locks the decision, the visual evidence needed to unlock it grows with the shortcut, and where the shortcut is reliable enough no tested image strength helps; the strength at which this happens differs between a medical and a natural-image benchmark.
+A stratified measure shows this; a headline average hides it.

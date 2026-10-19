@@ -1,0 +1,2 @@
+# Note to A37 (2026-10-07)
+The first judge job (23709535) failed at import after 23 seconds because the installed transformers has no AutoModelForVision2Seq; scripts/a37_judge.py now imports AutoModelForImageTextToText (the class used by every other script of this study). Nothing else changed: no judge output exists from the failed job, the three inference arms had finished (jobs 23709531-23709533), and the rules, the judge model and the rubric are those of A37.

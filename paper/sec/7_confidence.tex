@@ -1,0 +1,15 @@
+\section{An Error Alarm That Cannot See the Image}
+\label{sec:conf}
+
+\paragraph{The text-undecided stratum holds the errors.}
+Because errors live where the text is undecided, the model's confidence is an alarm.
+Abstaining when the true-image margin is below $\tau=0.9948$ (fixed on unlabeled validation data, Sec.~\ref{sec:setting}) flags 16\% of questions and contains \emph{every} error on all four labelled samples (52 of 52 fresh, 21 of 21 dev, 13 of 13 pool and 28 of 28 test errors; Supp.~Table~5 and Fig.~1): the answered 84\% are right every time.
+The threshold, set with no labels, transferred to two labelled samples it had never seen (pre-registered, A5), and to the 3{,}000 fresh questions.
+The same rule, with a threshold set per model on unlabeled validation data, replicates on the two fine-tuned models on unseen questions: the flagged 16.4\% contain 131 of 135 and 118 of 120 errors (Sec.~\ref{sec:training}).
+The confidence margin separates right from wrong with AUROC 0.97--0.98, far above the ``predicts the shortest option'' signal (0.82--0.85); top-1 probability and entropy do equally well, so the margin is not special.
+Error counts are small (13--52; exact lower bounds 75--93\%), and the test row is exploratory.
+
+\paragraph{But the alarm does not see the image.}
+The same confidence is almost unchanged when the image is removed: 83.7\% of test questions stay confident with a black image against 84.3\% with the true one (83.0\% against 84.9\% on dev), and the prediction is unchanged for 97.3\% and 98.1\%.
+The alarm therefore flags questions whose \emph{text} is undecided, not questions whose \emph{evidence} is missing: a model fed a black image would be as confident as with the real one.
+For deployment this is a warning, not a safeguard. On PMC-VQA, without the cue, the same alarm is weak: its flagged 13--14\% hold only 19--22\% of the errors (Sec.~\ref{sec:pmc}).

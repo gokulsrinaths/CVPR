@@ -1,0 +1,24 @@
+\section{Stress Test (Robustness): Held-Out Models, Seeds and Judges}
+\label{sec:general}
+
+\paragraph{Predictions that held: held-out models and seeds.}
+Before training InternVL3-2B or Qwen2.5-VL-7B on planted shortcuts we fixed the prediction from the Qwen-3B curve (benefit $13.5$, $3.4$, $0.1$ points at $d=0.25$, $0.70$, $0.92$, tolerance $\pm4$; a veto boundary at $0.25$ and none at $0.92$; a monotone decrease); both models pass all three rules in both seeds, the second of which was pre-registered before it ran (largest deviation $1.96$ points; Supp.~O).
+Two further seeds of Qwen2.5-VL-3B and -7B reproduce the Med-CMR result (image effect on undecided questions $-1.0$ to $+2.5$ points, none significant) and the PMC-VQA result (gaps $+13.7$ to $+15.5$; Supp.~O); on OmniMedVQA the three families reach 98.7--98.9\% accuracy with image benefits of $+5.7$ to $+16.2$ points (Supp.~S).
+
+\paragraph{Explanations of the boundary that failed.}
+Three attempts to explain why benchmarks lock out at different strengths failed.
+(i)~Because the benefit without a cue is smaller on OmniMedVQA ($+5.7$ points) than on PMC-VQA ($+13.5$), we predicted before the runs that OmniMedVQA locks out by $d=0.85$; at $0.85$ the image still adds $+3.3$ and $+2.6$ points (two seeds; the cue-uptake rule also missed by 0.05 points, a flaw of our threshold, so the amendment is not informative as written).
+(ii)~A frozen one-constant hypothesis (lock-out where the log-odds evidence of the cue exceeds a constant times the mean visual log-odds gain of the cue-free model), calibrated once on Qwen-3B/PMC-VQA, fits the other PMC-VQA conditions but predicts lock-out for A-OKVQA near $d=0.9994$ (observed $0.99$; about 3 nats off) and for OmniMedVQA near $0.69$ (not locked at $0.85$).
+(iii)~Without planting, the image benefit within a benchmark does not fall consistently with a question's text predictability (quintiles of an option-only classifier; Spearman $-0.2$ on PMC-VQA and A-OKVQA, $-0.7$ on OmniMedVQA, zero except in the least predictable quintile on Med-CMR; both pre-registered rules failed), because where the blind ceiling is low the classifier's confidence carries little information; the natural evidence lies between benchmarks (Fig.~\ref{fig:headroom}; correlational).
+The lock-out strength is therefore a measured, benchmark-dependent property (Supp.~Z).
+
+\paragraph{Average measures disagree.}
+Across eight fine-tuned systems the accuracy drop and the visual information gain correlate at only $\rho=0.69$ (rule $\ge0.9$: failed); OmniMedVQA Qwen-3B has the information gain of PMC-VQA Qwen-3B ($0.16$ nats) but half its accuracy drop, since 64\% of its questions are text-decisive and the rest carry $+27$ points (Supp.~Z).
+
+\paragraph{Does the challenge's faithfulness gate check the image?}
+We ran the released adapter on 175 open-ended held-out cases with the true image, a black image and another case's image, and scored the traces with reproductions of the organisers' visual judge at three sizes (Qwen2.5-VL 3B, 7B, 32B; their size and prompts are unknown).
+All three give black-image traces about $0.3$ of 4, because $89.7\%$ of them say the image is black or blank, and none penalises a missing image when the judge itself sees a black image or none (32B: $3.54$ and $3.39$ against $3.40$); only the 32B judge notices another case's image ($3.40\to2.36$) or trace ($1.95$).
+The gate thus depends on the judge's size, and even the largest judge detects contradiction with the image, not the absence of visual evidence (Supp.~Z).
+
+\paragraph{What did not hold.}
+Failures include the image benefit on undecided questions in our fine-tuned models, a competition score, the median-margin rule, three cue-removal attempts, cue uptake and strong lock-out on A-OKVQA, the boundary shift of the position shortcut, the lock-out of InternVL3-2B at $d=0.99$, the benefit-without-a-cue predictor of lock-out and most methods on the real shortcut (Sec.~\ref{sec:remedy}).
